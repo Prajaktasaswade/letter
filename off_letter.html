@@ -1,0 +1,536 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offer Letter Generator</title>
+    
+    <!-- Include updated jsPDF and html2canvas libraries -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/cosmo/bootstrap.min.css">
+    <style>
+        body {
+            background-color:  #ffffff;
+            font-family: inter;
+        }
+        
+        .container {
+            max-width: 800px; /* Updated width for the container */
+            margin: 10px auto; /* Added margin for top and bottom */
+            padding: 20px;
+            background-color: #e9f7fc; /* Changed to white for the main container */
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            font-family: Arial, sans-serif;
+        }
+        
+        h1, h2, h3, h4 {
+            color: #333;
+        }
+        
+        h1 {
+            text-align: center;
+        }
+        
+        h2 {
+            text-align: center;
+            font-size: 14px !important;
+            font-weight: 600;
+        }
+        
+        h3 {
+            text-align: center;
+            font-size: 14px !important;
+            font-weight: 100;
+            line-height: 1.6;
+        }
+        
+        h4 {
+            text-align: left;
+            font-size: 12px !important;
+            font-weight: 100;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        input[type="text"],
+        input[type="date"],
+        input[type="number"],
+        input[type="time"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0; /* Added margin for spacing */
+            border: 1px solid #cccccc; /* Slightly lighter border */
+            border-radius: 5px;
+            box-shadow: none;
+            transition: box-shadow 0.2s ease;
+            text-transform: capitalize !important; /* Maintain capitalization */
+        }
+        
+        input[type="text"]:hover,
+        input[type="text"]:focus,
+        input[type="date"]:hover,
+        input[type="date"]:focus,
+        input[type="number"]:hover,
+        input[type="number"]:focus,
+        input[type="time"]:hover,
+        input[type="time"]:focus {
+            box-shadow: 0px 0px 5px rgba(59, 162, 199, 0.5); /* Added hover effect */
+        }
+        
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50; /* Primary button color */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px; /* Added margin for spacing */
+        }
+        
+        button:hover {
+            background-color: #45a049; /* Button hover effect */
+        }
+        
+        .letter-container {
+            margin-top: 40px;
+            background-color: #ffffff;
+            padding: 30px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding-left: 50px;
+            padding-right: 50px;
+        
+        }
+        
+        
+        #letterContent {
+            white-space: pre-wrap;
+            line-height: 1.6;
+            font-size: 14px !important;
+            background-repeat: no-repeat;
+            background-size: 400px;
+            background-position:45% 280px;
+            background-image: url("{% static 'Images/demandify.png' %}");
+            border-radius: 10px;
+            padding: 10px;
+            color: #333;
+            font-family:inter;
+            
+           
+            
+        }
+        
+        
+        img {
+            width: 30%;
+            margin-left: 70%; /* Align image to the right */
+        }
+        
+        .d-flex {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px; /* Space between items */
+        }
+        
+        @media (max-width: 768px) {
+            .d-flex {
+                flex-direction: column; /* Stack elements on small screens */
+            }
+        }
+        .signature-container {
+            text-align: left;
+            margin-top: 40px;
+        }
+        
+        .signature-image {
+            width: 150px;
+            height: auto;
+            margin-left:0%;
+        }     
+
+        .table-sm th, .table-sm td {
+            padding: 1rem;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="container">
+        <h1>Offer Letter Details</h1>
+        <p style="color: red; font-size: small; margin: 20px;"> 
+            <span style="color: black; font-weight: 600;"> Name Field Instruction:</span>
+              "Please enter the full legal name of the candidate as it should appear on official documents,
+                ensuring correct spelling and capitalization."
+        </p>
+
+        <form id="offerLetterForm"method="POST" action="{% url 'off_letter' %}">
+            {% csrf_token %} 
+            <div class="form-group">
+                <label for="name">Employee Name:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="location">Location:</label>
+                <input type="text" id="location" name="location" required>
+            </div>
+
+            <div class="form-group">
+                <label for="role">Role:</label>
+                <input type="text" id="role" name="role" required>
+            </div>
+
+            <div class="form-group">
+                <label for="manager">Manager Name:</label>
+                <input type="text" id="manager" name="manager" required>
+            </div>
+
+            <div class="form-group">
+                <label for="date">Offer Date:</label>
+                <input type="date" id="date" name="date" required>
+            </div>
+
+            <div class="form-group">
+                <label for="acceptanceDate">Acceptance Date:</label>
+                <input type="date" id="acceptanceDate" name="acceptanceDate" required>
+            </div>
+
+            <div class="form-group">
+                <label for="joiningDate">Joining Date:</label>
+                <input type="date" id="joiningDate" name="joiningDate" required>
+            </div>
+
+            <div class="form-group">
+                <label for="joiningTime">Joining Time:</label>
+                <input type="time" id="joiningTime" name="joiningTime" required>
+            </div>
+
+            <div class="form-group">
+                <label for="salary">Basic Salary (Monthly):</label>
+                <input type="number" id="salary" name="salary" required>
+            </div>
+
+            <div class="form-group">
+                <label for="hra">House Rent Allowance:</label>
+                <input type="number" id="hra" name="hra" required>
+            </div>
+
+            <div class="form-group">
+                <label for="other-allowances">Other Allowances:</label>
+                <input type="number" id="other-allowances" name="other-allowances" required>
+            </div> 
+            <div class="form-group">
+                <div class="button-container" style="display: flex; justify-content: space-between;">
+                    <button type="button" button id="generateoffer" onclick="generateLetter()" style="flex: 1; margin-right: 10px;">Generate Offer Letter</button>
+                    <button type="submit" style="flex: 1;">Submit Offer Letter</button>
+                </div>
+            </div>
+            
+        </form>
+   
+        <div class="letter-container" id="letterContainer" style="display:none;">
+            <span>
+                <img src="{% static 'Images/Demandify1.png' %}" alt="Company Logo" width="150px" style="margin-left: 70%;"> <br/>
+               
+            </span>
+            <div id="letterContent" style="font-family: inter; margin-top: 20px;">
+                <!-- Your dynamic letter content -->
+            </div>
+            <button id="downloadPDF" style="margin-top: 20px;" onclick="downloadPDF()">Download PDF</button>
+        </div>
+        
+    </div>
+
+<script>
+    function capitalizeFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+    }
+
+    function capitalizeWords(sentence) {
+        return sentence.split(' ').map(capitalizeFirstLetter).join(' ');
+    }
+    function generateLetter() {
+        // Prevent the form from submitting when generating the letter
+        const event = new Event('submit', { cancelable: true });
+        document.getElementById("offerLetterForm").dispatchEvent(event);
+
+            // Get the input values
+            const name = document.getElementById("name").value;
+            const location = document.getElementById("location").value;
+            const role = document.getElementById("role").value;
+            const manager = document.getElementById("manager").value;
+            const offerDate = new Date(document.getElementById("date").value).toLocaleDateString();
+            const joiningDate = new Date(document.getElementById("joiningDate").value).toLocaleDateString();
+            const joiningTime = document.getElementById('joiningTime').value;
+            const acceptanceDate = new Date(document.getElementById("acceptanceDate").value).toLocaleDateString();
+            const salary = parseFloat(document.getElementById("salary").value);
+            const hra = parseFloat(document.getElementById("hra").value);
+            const otherAllowances = parseFloat(document.getElementById("other-allowances").value);
+
+            // Function to generate salary table HTML
+            function generateSalaryTable() {
+                return `
+              <center>  <table id="salaryTable" class="table-sm" style="border-collapse: collapse; width: 80%;margin-top: 20px;font-size: 12px;">
+                    <thead>
+                        <tr style="background-color: #f0f0f0;">
+                            <th style="border: 1px solid black; padding: 8px;"><strong>SALARY COMPONENT</strong></th>
+                            <th style="border: 1px solid black; padding: 8px;"><strong>MONTHELY AMOUNT(INR)</strong></th>
+                            <th style="border: 1px solid black; padding: 8px;"><strong>ANNUAL AMOUNT(INR)</strong></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="border: 1px solid black; padding: 8px;">Basic</td>
+                            <td style="border: 1px solid black; padding: 8px;text-align: right;"> ${salary.toFixed(2)}</td>
+                            <td style="border: 1px solid black; padding: 8px;text-align: right;"> ${(salary * 12).toFixed(2)}</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid black; padding: 8px;">House Rent Allowance</td>
+                            <td style="border: 1px solid black; padding: 8px;text-align: right;"> ${hra.toFixed(2)}</td>
+                            <td style="border: 1px solid black; padding: 8px;text-align: right;">${(hra * 12).toFixed(2)}</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid black; padding: 8px;">Other Allowances</td>
+                            <td style="border: 1px solid black; padding: 8px;text-align: right;"> ${otherAllowances.toFixed(2)}</td>
+                            <td style="border: 1px solid black; padding: 8px;text-align: right;"> ${(otherAllowances * 12).toFixed(2)}</td>
+                        </tr>
+                        <tr style="background-color: #f0f0f0;">
+                            <td style="border: 1px solid black; padding: 8px;"><strong>Total In-Hand</strong></td>
+                            <td style="border: 1px solid black; padding: 8px;text-align: right;"><strong> ${(salary + hra + otherAllowances).toFixed(2)}</strong></td>
+                            <td style="border: 1px solid black; padding: 8px;text-align: right;"><strong> ${((salary + hra + otherAllowances) * 12).toFixed(2)}</strong></td>
+                        </tr>
+                    </tbody>
+                </table> </center> 
+
+                <h4>**You will be eligible for other floor/process incentives announced from time to time.This extra incentive amount is not fixed & varies as per business plan.<br><br>***All payments are subject to TDS as per Income Tax Act.<br><br>****PT Deduction as applicable. Deduction of INR 200 / 175 per month as per PT Law. Other Statutory deductions may apply.<br><br>*****Employee Insurance Program is as per company policy. The coverage provided under the Employee Insurance Program is subject to change or can be ceased at the discretion of the Management, without prior notice. The decision of the Management will be final and binding.<br><br> Note: You will receive salary and all other benefits forming part of your remuneration package subject to, and after, deduction of tax at source, Professional tax, ESI/PF in accordance with applicable law.<br> </h4> 
+                `;
+            }// Generate offer letter content
+const letterContent = `
+<h2>Subject: Offer Letter</h2>
+Date: ${offerDate}
+Name :${capitalizeWords(name)}
+Location: ${capitalizeWords(location)}
+
+Dear ${capitalizeWords(name)},
+
+We are pleased to offer you the role of <b>'${capitalizeWords(role)}'</b> with our company reporting to <b>${capitalizeWords(manager)} (Managing Director)</b>.This offer must be accepted in writing and communication of such acceptance must be received by the company no later than <b>${acceptanceDate}</b>, failing which this offer will be deemed withdrawn.
+
+This offer is also subject to the submission of educational certificates, employment work-experience testimonials,and other documents required as per Company Policy and verification of all information provided by you to the satisfaction of the Company,including the Background Check Report, Previous Compensation, and Education credentials.
+
+Should you accept this Offer, your employment will be subject to the following conditions read with the terms and conditions contained in the Employment Agreement which you will be required to sign separately on the date of joining. Kindly go through the attached draft closely and let the undersigned know if you require any clarifications on the same.
+
+<b>1. Date of Appointment:</b>
+
+a. Your employment will be effective from your date of joining. You are required to report to the undersigned at<b> 
+${joiningTime}</b> IST on <b>${joiningDate}</b> for joining employment, failing which it shall be presumed that you do not intend to join the employment of the company in breach of your acceptance of this offer.
+
+b. From the date of joining, you will be on probation for three months, which period may be extended for a further period of up to three months at the discretion of the company.
+
+c. Your employment will be deemed confirmed after 90 days of joining and will not require a separate Confirmation Letter if you are not notified otherwise by your Reporting Manager.
+
+d. In case of extension of confirmation due to unsatisfactory performance or any other valid reason identified by the Organization, you will be notified on the extension of confirmation.
+
+e. Your employment is subject to successful completion of Training and On Job Training (OJT) assessment.
+<footer id="pdf-footer" style="text-align: center;">
+    <img src="{% static 'Images/footer2.png' %}" alt="Footer Image" style="width: 60%; height: auto; margin-left:15px;">
+</footer>
+
+<img src="{% static 'Images/Demandify1.png' %}" alt="Company Logo" width="150px" style="margin-left: 70%;"> 
+<div style="
+    background-repeat: no-repeat;
+    background-size: 400px;
+    background-position: 45% 280px;
+    background-image: url('{% static 'Images/demandify.png' %}');
+    border-radius: 10px;
+    padding: 10px;
+    color: #333;">
+f. During the probation/employment period, your services are terminable by 30 days' notice period in writing from either side or salary in lieu thereof.
+
+<b>2. Terms and Conditions:</b>
+      a. All references to “Company” made in this offer letter shall be taken to mean “Demandify Media 
+      Private Limited.”
+      b. You are expected to contribute positively to the growth of the company and devote your singular 
+      attention towards the same.
+      c. You shall observe strict compliance with the work policies of the company and shall maintain the 
+      reputation of the company and refrain from making any statements that could discredit the reputation of 
+      the company.
+      d. An employee terminated due to unsanctioned/uninformed absenteeism and/or misbehavior including 
+      data fudging/reporting fraud, etc., will not be eligible for any remuneration & any pending dues will be 
+      forfeited.
+      e. Whenever an employee leaves their job, any company property—digital, hard copy, or soft copy—needs 
+      to be handed over to the Manager, IT, and HR.
+      f. During the course of employment, regardless of the department, any data, content, leads, client details, 
+      interviews, or meetings that are part of the employment remain the company's property and are not owned 
+      by employees. Any outreach or use of that data, including videos made by the ex-employee, will lead to 
+      immediate legal action.
+      g. Every employee who joins the company will be on probation for their first three months.
+      h. During the exit process, any defamation by the employee, employer, or manager will lead to legal action 
+      for defamation, and any pending salary or dues will not be paid.
+
+<b>3. Remuneration:</b>
+      a. You will be entitled to receive your monthly compensation between the 5th to the 7th working day of 
+      every succeeding month.
+      b. On joining employment, as per the company’s compensation policy, you will be entitled to the 
+      following salary structure (Please refer to attached Annexure -A).
+      c. Review of remuneration:Your remuneration will be reviewed at periodic intervals from time to time in 
+      accordance with the company’s internal policies and revisions will be based on your performance review 
+      and effectiveness factors.
+      d. To avail Variable Pay and other floor/process incentives or any other remuneration which is not part of 
+      the Base Pay component, you will need to be on the active rolls of the Company on the date on which 
+      such payments are disbursed by the Company.
+      e. Your salary is strictly confidential.
+</div><br><br>
+<footer id="pdf-footer" style="text-align: center;">
+    <img src="{% static 'Images/footer2.png' %}" alt="Footer Image" style="width: 60%; height: auto; margin-left:15px;">
+</footer>
+
+<img src="{% static 'Images/Demandify1.png' %}" alt="Company Logo" width="150px" style="margin-left: 70%;"> 
+<div style="
+    background-repeat: no-repeat;
+    background-size: 400px;
+    background-position: 45% 280px;
+    background-image: url('{% static 'Images/demandify.png' %}');
+    border-radius: 10px;
+    padding: 10px;
+    color: #333;"><br><br>
+The above terms shall be annexed along with an attached Employment Agreement. In the event there is any conflict between this Offer and the Employment Agreement, the terms of the Employment Agreement shall prevail.
+
+Please acknowledge this letter as a token of your acceptance to our offer.
+    
+    
+
+
+
+
+
+     With Best wishes,
+     Sincerely yours,                         
+<div class="signature-container"><img src="{% static 'Images/signature.png' %}" alt="Signature" class="signature-image"></div>                                                                              
+     Co-Founder
+     Sunny Ashpal
+     Demandify Media Private Limited                                                       Employee Signature
+     Date: ${offerDate}                                                                     ( ${capitalizeWords(name)})
+                                                                                    
+
+
+
+
+
+
+
+
+
+
+</div><br>
+<footer id="pdf-footer" style="text-align: center;">
+    <img src="{% static 'Images/footer2.png' %}" alt="Footer Image" style="width: 60%; height: auto; margin-left:15px;">
+</footer>
+
+<br>
+<img src="{% static 'Images/Demandify1.png' %}" alt="Company Logo" width="150px" style="margin-left: 70%;"> <br/><br>
+<div style="background-repeat: no-repeat;background-size: 400px;background-position: 45% 280px;background-image: url('{% static 'Images/demandify.png' %}');border-radius: 10px;padding: 10px;color: #333;">
+<b><h2>Annexure - A</h2></b>
+<h3>Company transport if availed, is charged at an additional cost as per Transport Policy.</h3>
+${generateSalaryTable()}
+</div>
+
+<footer id="pdf-footer" style="text-align: center;">
+    <img src="{% static 'Images/footer2.png' %}" alt="Footer Image" style="width: 60%; height: auto; margin-left:15px;">
+</footer>`;
+ 
+
+// Display the generated letter
+document.getElementById("letterContent").innerHTML = letterContent;
+document.getElementById("letterContainer").style.display = "block";
+}
+
+function generateSalaryTable(salary, hra, otherAllowances) {
+    return `
+        <table id="salaryTable" style="border-collapse: collapse; width: 100%; margin-top: 20px;">
+            <!-- Salary table rows as in original code -->
+        </table>
+    `;
+}
+
+function downloadPDF() {
+    const letterContent = document.getElementById("letterContainer");
+    const downloadButton = document.getElementById("downloadPDF");
+    const generateButton = document.querySelector("button[type='button']"); // Select the Generate Offer Letter button
+
+    // Temporarily hide the download button and the generate button
+    downloadButton.style.display = "none"; // Hide the download button
+    generateButton.style.display = "none"; // Hide the generate button
+
+    // Ensure the container is visible
+    letterContent.style.display = "block";
+
+    // Use html2canvas to take a snapshot of the letter content
+    html2canvas(letterContent, { scale: 2, useCORS: true })
+        .then((canvas) => {
+            const imgData = canvas.toDataURL('image/png');
+
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const imgWidth = 210; // Width of A4 in mm
+            const pageHeight = 297; // Height of A4 in mm
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            let heightLeft = imgHeight;
+
+            // Start adding images to the PDF
+            let position = 0;
+
+            // Add the first page
+            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+
+            // Add additional pages if needed
+            while (heightLeft >= 0) {
+                position = heightLeft - imgHeight; // Adjust position for next page
+                pdf.addPage();
+                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+            }
+
+            const backgroundImg = new Image();
+            backgroundImg.src = ".png"; // Replace with your image path
+            backgroundImg.onload = function () {
+                pdf.addPage();
+                pdf.addImage(backgroundImg, 'PNG', 0, 0, imgWidth, pageHeight); // Add background image
+                // Add letter content
+                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                // Add footer here as before
+            };
+            
+
+
+            
+                pdf.save(`Offer_Letter_${document.getElementById("name").value}.pdf`); // Save the PDF with the employee's name
+           
+
+            // Restore the visibility of the buttons
+            downloadButton.style.display = "block"; // Show the download button again
+            generateButton.style.display = "block"; // Show the generate button again
+        });
+}
+
+</script>
+</body>
+</html>

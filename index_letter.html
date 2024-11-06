@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation Bar with Letters</title>
+    <style>
+        nav {
+            background-color: #4b8bb0;
+            background-image: linear-gradient(160deg, #4991ba 0%, #80D0C7 100%);
+            margin-top: 1px;
+            padding: 0;
+            justify-content: flex-start;
+            display: flex;
+        }
+
+        nav ul {
+            position: static;
+            display: flex;
+            list-style-type: none;
+            padding: 0 20px;
+            margin: 0;
+        }
+
+        nav ul li {
+            padding: 0px auto;
+            margin: 10px 25px;
+            background-image: linear-gradient(160deg, #4991ba 0%, #80D0C7 100%);            padding: 15px 20px;
+
+            display: inline-block;
+            position: relative;
+        }
+
+        nav ul li a {
+           
+            display: block;
+            padding: 1px 10px;
+            text-decoration: none;
+            color: #fbf7f7;
+            transition: background-color 0.3s;
+        }
+
+        nav ul li a:hover {
+            background-color: #d3e9f3;
+            color: #333;
+        }
+
+        nav ul li select {
+            background-image: linear-gradient(160deg, #4991ba 0%, #80D0C7 100%);
+            padding:5px 5px;
+            border-radius: 7px;
+            width: 210px;
+            height: 40px;
+            color: #fbf7f7;
+        }
+
+        nav ul li ul {
+            display: none;
+            position: absolute;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ccc;
+            z-index: 1000;
+        }
+
+        nav ul li:hover ul {
+            display: block;
+        }
+
+        nav ul li ul li {
+            padding: 1px 1px;
+            display: block;
+            white-space: nowrap;
+        }
+
+        nav ul li ul li a {
+            padding: 5px 20px;
+            text-decoration: none;
+            color: #333;
+        }
+
+        nav ul li ul li a:hover {
+            background-color: #f0f0f0;
+        }
+
+        .content-area {
+            background-position: center;
+            background-size: 300px;
+            background-repeat: no-repeat;
+            background-image: url('./Images/Demandify Logo Without BG (1) 1.png');
+            margin-top: 8px;
+            padding: 5px 20px;
+            min-height: 465px;
+        }
+
+        .content-area p {
+            margin: 20% 25%;
+            opacity: 0.6;
+            font-size: larger;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <ul>
+        
+        <li>
+            <a href="#">Initial Stage Letters</a>
+            <ul>
+                {% comment %} <li><a href="{% url 'interviewcall_letter' %}">Interview Call Letter</a></li> {% endcomment %}
+                {% comment %} <li><a href="{% url 'offer_letter' %}">Offer Letter</a></li> {% endcomment %}
+                <li><a href="{% url 'off_letter' %}">Off Letter</a></li>
+                {% comment %} <li><a href="{% url 'join_letter' %}">Joining Letter</a></li> {% endcomment %}
+                {% comment %} <li><a href="{% url 'reference_letter' %}">Reference Letter</a></li> {% endcomment %}
+            </ul>
+        </li>
+        <li>
+            <a href="#">Active Employment Letters</a>
+            <ul>
+                {% comment %} <li><a href="{% url 'leaveapproval_letter' %}">Leave Approval Letter</a></li> {% endcomment %}
+                {% comment %} <li><a href="{% url 'performance_letter' %}">Performance Letter</a></li> {% endcomment %}
+                {% comment %} <li><a href="{% url 'promotion_letter' %}" >Promotion Letter</a></li> {% endcomment %}
+                {% comment %} <li><a href="{% url 'salaryincrease_letter' %}">Salary Increment Letter</a></li> {% endcomment %}
+            </ul>
+        </li>
+        <li>
+            <a href="#">End of Employment Letters</a>
+            <ul>
+                {% comment %} <li><a href="{% url 'resignation_letter' %}" >Resignation Letter</a></li> {% endcomment %}
+                {% comment %} <li><a href="{% url 'separation_letter' %}">Separation Letter</a></li> {% endcomment %}
+                {% comment %} <li><a href="{% url 'transfer_letter' %}">Transfer Letter</a></li> {% endcomment %}
+                {% comment %} <li><a href="{% url 'warning_letter' %}">Warning Letter</a></li> {% endcomment %}
+            </ul>
+        </li>
+        <li>
+            <a href="#">Post-Employment Letters</a>
+            <ul>
+                {% comment %} <li><a href="{% url 'experience_letter' %}">Experience Letter</a></li> {% endcomment %}
+            </ul>
+        </li>
+        
+    </ul>
+</nav>
+
+<div class="content-area" id="contentArea">
+    <!-- Space for letter content -->
+    <p>Select a letter type from the navigation above to display its content here.</p>
+</div>
+
+<script>
+    // Function to load the linked HTML file content into the main body
+    function loadContent(file) {
+        if (!file) {
+            document.getElementById('contentArea').innerHTML = '<p>Please select a letter type from the dropdowns above.</p>';
+            return;
+        }
+
+        // Use fetch API to get the content of the linked HTML file
+        fetch(file)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(htmlContent => {
+                document.getElementById('contentArea').innerHTML = htmlContent;
+            })
+            .catch(error => {
+                document.getElementById('contentArea').innerHTML = '<p>Error loading the content.</p>';
+                console.error('There was a problem with the fetch operation:', error);
+            });
+    }
+</script>
+
+</body>
+</html>
