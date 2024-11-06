@@ -1,4 +1,4 @@
-{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -128,7 +128,7 @@
             background-repeat: no-repeat;
             background-size: 400px;
             background-position:45% 280px;
-            background-image: url("{% static 'Images/demandify.png' %}");
+            background-image: url('demandify.png');
             border-radius: 10px;
             padding: 10px;
             color: #333;
@@ -181,7 +181,7 @@
                 ensuring correct spelling and capitalization."
         </p>
 
-        <form id="offerLetterForm"method="POST" action="{% url 'off_letter' %}">
+        <form id="offerLetterForm"method="POST" action="off_letter.html">
             {% csrf_token %} 
             <div class="form-group">
                 <label for="name">Employee Name:</label>
@@ -248,7 +248,7 @@
    
         <div class="letter-container" id="letterContainer" style="display:none;">
             <span>
-                <img src="{% static 'Images/Demandify1.png' %}" alt="Company Logo" width="150px" style="margin-left: 70%;"> <br/>
+                <img src= "Demandify1.png"  alt="Company Logo" width="150px" style="margin-left: 70%;"> <br/>
                
             </span>
             <div id="letterContent" style="font-family: inter; margin-top: 20px;">
@@ -350,15 +350,15 @@ d. In case of extension of confirmation due to unsatisfactory performance or any
 
 e. Your employment is subject to successful completion of Training and On Job Training (OJT) assessment.
 <footer id="pdf-footer" style="text-align: center;">
-    <img src="{% static 'Images/footer2.png' %}" alt="Footer Image" style="width: 60%; height: auto; margin-left:15px;">
+    <img src="footer2.png" alt="Footer Image" style="width: 60%; height: auto; margin-left:15px;">
 </footer>
 
-<img src="{% static 'Images/Demandify1.png' %}" alt="Company Logo" width="150px" style="margin-left: 70%;"> 
+<img src="Demandify1.png" alt="Company Logo" width="150px" style="margin-left: 70%;"> 
 <div style="
     background-repeat: no-repeat;
     background-size: 400px;
     background-position: 45% 280px;
-    background-image: url('{% static 'Images/demandify.png' %}');
+    background-image: url('demandify.png');
     border-radius: 10px;
     padding: 10px;
     color: #333;">
@@ -399,15 +399,15 @@ f. During the probation/employment period, your services are terminable by 30 da
       e. Your salary is strictly confidential.
 </div><br><br>
 <footer id="pdf-footer" style="text-align: center;">
-    <img src="{% static 'Images/footer2.png' %}" alt="Footer Image" style="width: 60%; height: auto; margin-left:15px;">
+    <img src="footer2.png" alt="Footer Image" style="width: 60%; height: auto; margin-left:15px;">
 </footer>
 
-<img src="{% static 'Images/Demandify1.png' %}" alt="Company Logo" width="150px" style="margin-left: 70%;"> 
+<img src="Demandify1.png" alt="Company Logo" width="150px" style="margin-left: 70%;"> 
 <div style="
     background-repeat: no-repeat;
     background-size: 400px;
     background-position: 45% 280px;
-    background-image: url('{% static 'Images/demandify.png' %}');
+    background-image: url( 'demandify.png');
     border-radius: 10px;
     padding: 10px;
     color: #333;"><br><br>
@@ -423,7 +423,7 @@ Please acknowledge this letter as a token of your acceptance to our offer.
 
      With Best wishes,
      Sincerely yours,                         
-<div class="signature-container"><img src="{% static 'Images/signature.png' %}" alt="Signature" class="signature-image"></div>                                                                              
+<div class="signature-container"><img src="signature.png"  alt="Signature" class="signature-image"></div>                                                                              
      Co-Founder
      Sunny Ashpal
      Demandify Media Private Limited                                                       Employee Signature
@@ -441,11 +441,11 @@ Please acknowledge this letter as a token of your acceptance to our offer.
 
 </div><br>
 <footer id="pdf-footer" style="text-align: center;">
-    <img src="{% static 'Images/footer2.png' %}" alt="Footer Image" style="width: 60%; height: auto; margin-left:15px;">
+    <img src="footer2.png" alt="Footer Image" style="width: 60%; height: auto; margin-left:15px;">
 </footer>
 
 <br>
-<img src="{% static 'Images/Demandify1.png' %}" alt="Company Logo" width="150px" style="margin-left: 70%;"> <br/><br>
+<img src="Demandify1.png" alt="Company Logo" width="150px" style="margin-left: 70%;"> <br/><br>
 <div style="background-repeat: no-repeat;background-size: 400px;background-position: 45% 280px;background-image: url('{% static 'Images/demandify.png' %}');border-radius: 10px;padding: 10px;color: #333;">
 <b><h2>Annexure - A</h2></b>
 <h3>Company transport if availed, is charged at an additional cost as per Transport Policy.</h3>
@@ -453,7 +453,7 @@ ${generateSalaryTable()}
 </div>
 
 <footer id="pdf-footer" style="text-align: center;">
-    <img src="{% static 'Images/footer2.png' %}" alt="Footer Image" style="width: 60%; height: auto; margin-left:15px;">
+    <img src="footer2.png" alt="Footer Image" style="width: 60%; height: auto; margin-left:15px;">
 </footer>`;
  
 
