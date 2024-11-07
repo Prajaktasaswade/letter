@@ -1,4 +1,4 @@
-{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -65,7 +65,7 @@
             background-repeat: no-repeat;
             background-size: 300px;
             background-position:45% 280px;
-            background-image: url("{% static 'Images/demandify.png' %}");
+            background-image: url('demandify.png');
             border-radius: 10px;
             padding: 20px;
             color: #333;
@@ -113,8 +113,8 @@
                     "Please enter the full legal name of the candidate as it should appear on official documents,
                      ensuring correct spelling and capitalization."
                 </p>
-                <form id="interviewForm" method="POST" action="{% url 'interviewcall_letter' %}">
-                    {% csrf_token %}
+                <form id="interviewForm" method="POST" action="interviewcall_letter.html">
+                    
                     
                     <label for="salutation">Salutation</label><br>
                     <select name="salutation" id="salutation">
@@ -157,7 +157,7 @@
 
             <!-- Letter Section -->
             <div class="letter-section border">
-                <img src="{% static 'Images/Demandify1.png' %}" alt="Company Logo" width="150px" style="margin-left: 70%;"> <br/>
+                <img src="Demandify1.png" alt="Company Logo" width="150px" style="margin-left: 70%;"> <br/>
                 <h5>Interview Call Letter</h5>
 
                 <p id="interviewLetterContent">
