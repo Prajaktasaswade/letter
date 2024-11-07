@@ -1,0 +1,224 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promotion Letter</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/cosmo/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f7f9fc;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 10px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .form-section, .letter-section {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .form-section {
+            background-color: #e9f7fc;
+            border-radius: 10px;
+        }
+
+        .form-section h4 {
+            text-align: center;
+            color: #333333;
+            margin-bottom: 30px;
+        }
+
+        .form-section label {
+            font-weight: bold;
+            color: #333333;
+        }
+
+        .form-section input, .form-section select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+            box-shadow: none;
+            transition: box-shadow 0.2s ease;
+            text-transform: capitalize !important;
+        }
+
+        .form-section input:hover, .form-section input:focus,
+        .form-section select:hover, .form-section select:focus {
+            box-shadow: 0px 0px 5px rgba(59, 162, 199, 0.5);
+        }
+
+        .letter-section {
+            background-repeat: no-repeat;
+            background-size: 300px;
+            background-position: 45% 280px;
+            background-image: url("{% static 'Images/demandify.png' %}");
+            border-radius: 10px;
+            padding: 10px;
+            color: #333;
+        }
+
+        .letter-section h5 {
+            text-align: center;
+            color: #333333;
+            margin-bottom: 20px;
+        }
+
+        .letter-section p {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #555555;
+            padding: 0 20px;
+        }
+
+        .d-flex {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .d-flex {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="d-flex">
+
+        <!-- Form Section -->
+        <div class="form-section border">
+            <h4>Promotion Letter Details</h4>
+            <p style="color: red; font-size: small; margin: 20px;">
+                <span style="color: black; font-weight: 600;">Name Field Instruction:</span>
+                "Please enter the full legal name of the candidate as it should appear on official documents,
+                ensuring correct spelling and capitalization."
+            </p>
+            <form id="promotionForm" method="POST" action="{% url 'promotion_letter' %}">
+                {% csrf_token %}
+                <label for="salutation">Salutation</label>
+                <select name="salutation" id="salutation">
+                    <option value="Mr">Mr.</option>
+                    <option value="Mrs">Mrs.</option>
+                    <option value="Ms">Ms.</option>
+                </select>
+
+                <label for="employeeName">Employee Name</label>
+                <input type="text" name="employeeName" id="employeeName" placeholder="Enter Employee Name" required>
+
+                <label for="currentPosition">Current Position</label>
+                <input type="text" name="currentPosition" id="currentPosition" placeholder="Enter Current Position">
+
+                <label for="newPosition">New Position</label>
+                <input type="text" name="newPosition" id="newPosition" placeholder="Enter New Position">
+
+                <label for="effectiveDate">Effective Date</label>
+                <input type="date" name="effectiveDate" id="effectiveDate">
+
+                <label for="salaryIncrement">Salary Increment</label>
+                <input type="text" name="salaryIncrement" id="salaryIncrement" placeholder="Enter Salary Increment">
+
+                <label for="managerName">Manager Name</label>
+                <input type="text" name="managerName" id="managerName" placeholder="Enter Manager Name">
+
+                <label for="companyName">Company Name</label>
+                <select name="companyName" id="companyName">
+                    <option value="Demandify Media"> Demandify Media</option>
+                    <option value="Gnosisdata Marketing">Gnosisdata Marketing</option>
+                   
+                </select>
+
+
+                <button type="button" onclick="generatePromotionLetter()">Generate Promotion Letter</button>
+                <button type="submit">Submit Promotion Letter</button>
+            </form>
+        </div>
+
+        <!-- Letter Section -->
+        <div class="letter-section border">
+            <span>
+                <img src="{% static 'Images/Demandify1.png' %}" alt="Company Logo" width="150px" style="margin-left: 70%;">
+                <h5>Promotion Letter</h5>
+            </span>
+            <p id="promotionLetterContent">
+                Dear <b>[Salutation]. [Employee Name]</b>,<br><br>
+
+                Congratulations! We are pleased to inform you that you have been promoted to the position of <b>[New Position]</b> 
+                at <b>[Company Name]</b>, effective <b>[Effective Date]</b>. This promotion is a reflection of your hard work, 
+                dedication, and the positive contributions you have made to the company.<br><br>
+
+                In your new role, you will report to <b>[Manager Name]</b> and will be responsible for [brief description of new responsibilities]. 
+                Your new compensation package includes a salary increase of <b>[Salary Increment]</b>, along with the benefits and perks 
+                you are currently entitled to.<br><br>
+
+                We are confident that you will excel in your new role and continue to be a valuable asset to our team. 
+                We look forward to your continued success at <b>[Company Name]</b>.<br><br>
+
+                Please feel free to reach out to me or your manager if you have any questions regarding your new role.<br><br>
+
+                Sincerely,<br>
+                <b>[Manager Name]</b><br>
+                Manager<br>
+                <b>[Company Name]</b>
+            </p>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function capitalizeText(text) {
+        return text.replace(/\b\w/g, function(char) {
+            return char.toUpperCase();
+        });
+    }
+    
+    function generatePromotionLetter() {
+        // Get form input values
+        const salutation = document.getElementById('salutation').value;
+        const employeeName = document.getElementById('employeeName').value;
+        const currentPosition = document.getElementById('currentPosition').value;
+        const newPosition = document.getElementById('newPosition').value;
+        const effectiveDate = document.getElementById('effectiveDate').value;
+        const salaryIncrement = document.getElementById('salaryIncrement').value;
+        const managerName = document.getElementById('managerName').value;
+        const companyName = document.getElementById('companyName').value;
+    
+        // Capitalize inputs
+        const capitalizedEmployeeName = capitalizeText(employeeName);
+        const capitalizedCompanyName = capitalizeText(companyName);
+        const capitalizedManagerName = capitalizeText(managerName);
+        const capitalizedNewPosition = capitalizeText(newPosition);
+        const capitalizedCurrentPosition = capitalizeText(currentPosition);
+    
+        // Replace placeholders in the letter content
+        let promotionLetterContent = document.getElementById('promotionLetterContent').innerHTML;
+        promotionLetterContent = promotionLetterContent.replace(/\[Salutation\]/g, salutation);
+        promotionLetterContent = promotionLetterContent.replace(/\[Employee Name\]/g, capitalizedEmployeeName);
+        promotionLetterContent = promotionLetterContent.replace(/\[New Position\]/g, capitalizedNewPosition);
+        promotionLetterContent = promotionLetterContent.replace(/\[Effective Date\]/g, effectiveDate);
+        promotionLetterContent = promotionLetterContent.replace(/\[Salary Increment\]/g, salaryIncrement);
+        promotionLetterContent = promotionLetterContent.replace(/\[Company Name\]/g, capitalizedCompanyName);
+        promotionLetterContent = promotionLetterContent.replace(/\[Manager Name\]/g, capitalizedManagerName);
+    
+        // Update the letter content with filled details
+        document.getElementById('promotionLetterContent').innerHTML = promotionLetterContent;
+    }
+    
+</script>
+
+</body>
+</html>

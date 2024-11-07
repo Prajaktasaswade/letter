@@ -1,0 +1,210 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave Approval Letter</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/cosmo/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f7f9fc;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 10px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .form-section, .letter-section {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .form-section {
+            background-color: #cfeffb;
+            border-radius: 10px;
+        }
+
+        .form-section h4 {
+            text-align: center;
+            color: #333333;
+            margin-bottom: 30px;
+        }
+
+        .form-section label {
+            font-weight: bold;
+            color: #333333;
+        }
+
+        .form-section input,.form-section select  {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+            box-shadow: none;
+            transition: box-shadow 0.2s ease;
+            text-transform: capitalize !important;
+        }
+
+        .form-section input:hover, .form-section input:focus {
+            box-shadow: 0px 0px 5px rgba(59, 162, 199, 0.5);
+        }
+
+        .letter-section {
+            background-repeat: no-repeat;
+            background-size: 300px;
+            background-position: 45% 280px;
+            background-image: url("{% static 'Images/demandify.png' %}");
+            border-radius: 10px;
+            padding: 10px;
+            color: #333;
+        }
+
+        .letter-section h5 {
+            text-align: center;
+            color: #333333;
+            margin-bottom: 20px;
+        }
+
+        .letter-section p {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #555555;
+            padding: 0 20px;
+        }
+
+        .d-flex {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .d-flex {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="d-flex">
+
+        <!-- Form Section -->
+        <div class="form-section border">
+            <h4>Leave Approval Letter Details</h4>
+            <p style="color: red; font-size: small; margin: 20px;">
+                <span style="color: black; font-weight: 600;">Name Field Instruction:</span>
+                "Please enter the full legal name of the candidate as it should appear on official documents,
+                ensuring correct spelling and capitalization."
+            </p>
+            <form id="leaveApprovalForm" method="POST" action="{% url 'leaveapproval_letter' %}">
+                {% csrf_token %}
+                <label for="salutation">Salutation</label><br>
+                <select name="salutation" id="salutation">
+                    <option value="Mr">Mr.</option>
+                    <option value="Mrs">Mrs.</option>
+                    <option value="Ms">Ms.</option>
+                </select>
+                <br>
+                <label for="employeeName">Employee Name</label>
+                <input type="text" name="employeeName" id="employeeName" placeholder="Enter Employee Name">
+
+                <label for="leaveType">Leave Type (e.g., Vacation, Personal)</label>
+                <input type="text" name="leaveType" id="leaveType" placeholder="Enter Leave Type">
+
+                <label for="startDate">Start Date</label>
+                <input type="date" name="startDate" id="startDate">
+
+                <label for="endDate">End Date</label>
+                <input type="date" name="endDate" id="endDate">
+
+                <label for="managerName">Manager Name</label>
+                <input type="text" name="managerName" id="managerName" placeholder="Enter Manager Name">
+
+                <label for="companyName">Company Name</label>
+                <select name="companyName" id="companyName">
+                    <option value="Demandify Media">Demandify Media</option>
+                    <option value="Gnosisdata Marketing">Gnosisdata Marketing</option>
+                </select>
+
+                <button type="submit">Submit Leave Approval Letter</button>
+                <button type="button" onclick="generateLeaveApprovalLetter()">Generate Leave Approval Letter</button>
+            </form>
+        </div>
+
+        <!-- Letter Section -->
+        <div class="letter-section border">
+            <span>
+                <img src="{% static 'Images/Demandify1.png' %}" alt="Company Logo" width="150px" style="margin-left: 70%;"> 
+                <h5>Leave Approval Letter</h5>
+            </span>
+            <p id="leaveApprovalLetterContent">
+                Dear <b>[Salutation].[Employee Name]</b>,<br><br>
+
+                We are pleased to inform you that your request for <b>[Leave Type]</b> leave has been approved. 
+                Your leave will be effective from <b>[Start Date]</b> to <b>[End Date]</b>. 
+                During this period, please ensure that all your work has been handed over and any pending tasks are completed.<br><br>
+
+                If there are any urgent matters that require your attention during your leave, please coordinate with your team or me.<br><br>
+
+                We hope you have a restful and enjoyable time away, and we look forward to welcoming you back on your return.<br><br>
+
+                Sincerely,<br>
+                <b>[Manager Name]</b><br>
+                Manager<br>
+                <b>[Company Name]</b>
+            </p>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function capitalizeText(text) {
+        return text.replace(/\b\w/g, function(char) {
+            return char.toUpperCase();
+        });
+    }
+
+    function generateLeaveApprovalLetter() {
+        // Get form input values
+        const salutation = document.getElementById('salutation').value;
+        const employeeName = document.getElementById('employeeName').value; 
+        const leaveType = document.getElementById('leaveType').value; 
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        const managerName = document.getElementById('managerName').value;
+        const companyName = document.getElementById('companyName').value;
+    
+        // Capitalize inputs
+        const capitalizedEmployeeName = capitalizeText(employeeName);
+        const capitalizedLeaveType = capitalizeText(leaveType);
+        const capitalizedManagerName = capitalizeText(managerName);
+        const capitalizedCompanyName = capitalizeText(companyName);
+    
+        // Replace placeholders in the letter content
+        let letterContent = document.getElementById('leaveApprovalLetterContent').innerHTML;
+        letterContent = letterContent.replace(/\[Salutation\]/g, salutation);
+        letterContent = letterContent.replace(/\[Employee Name\]/g, capitalizedEmployeeName);
+        letterContent = letterContent.replace(/\[Leave Type\]/g, capitalizedLeaveType);
+        letterContent = letterContent.replace(/\[Start Date\]/g, startDate);
+        letterContent = letterContent.replace(/\[End Date\]/g, endDate);
+        letterContent = letterContent.replace(/\[Manager Name\]/g, capitalizedManagerName);
+        letterContent = letterContent.replace(/\[Company Name\]/g, capitalizedCompanyName);
+    
+        // Update the letter content with filled details
+        document.getElementById('leaveApprovalLetterContent').innerHTML = letterContent;
+    }
+</script>
+
+</body>
+</html>

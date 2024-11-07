@@ -1,0 +1,228 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Experience Letter</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/cosmo/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f0f4f8;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 10px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .form-section, .letter-section {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .form-section {
+            background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%);
+            border-radius: 10px;
+            color: white;
+        }
+
+        .form-section h4 {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+
+        .form-section label {
+            font-weight: bold;
+            color: #f0f4f8;
+        }
+
+        .form-section input, .form-section select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+            box-shadow: none;
+            background-color: white;
+            color: #333;
+            transition: box-shadow 0.2s ease;
+            text-transform: capitalize !important;
+        }
+
+        .form-section input:hover, .form-section input:focus,
+        .form-section select:hover, .form-section select:focus {
+            box-shadow: 0px 0px 5px rgba(59, 162, 199, 0.5);
+        }
+
+        .letter-section {
+            background-repeat: no-repeat;
+            background-size: 300px;
+            background-position: 45% 280px;
+            background-image: url("{% static 'Images/demandify.png' %}");
+            border-radius: 10px;
+            padding: 20px;
+            color: #333;
+        }
+
+        .letter-section h5 {
+            text-align: center;
+            color: #333333;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .letter-section p {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #555555;
+            padding: 0 20px;
+        }
+
+        .d-flex {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .d-flex {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="d-flex">
+
+        <!-- Form Section -->
+        <div class="form-section border">
+            <h4>Experience Letter Details</h4>
+            <p style="color: red; font-size: small; margin: 20px;">
+                <span style="color: black; font-weight: 600;">Name Field Instruction:</span>
+                "Please enter the full legal name of the candidate as it should appear on official documents,
+                ensuring correct spelling and capitalization."
+            </p>
+           
+            <form id="experienceForm" method="POST" action="{% url 'experience_letter' %}">
+                {% csrf_token %}
+                <label for="salutation">Salutation</label><br>
+                <select name="salutation" id="salutation">
+                    <option value="Mr">Mr.</option>
+                    <option value="Mrs">Mrs.</option>
+                    <option value="Ms">Ms.</option>
+                </select>
+                <br>
+                <label for="name">Employee Name</label>
+                <input type="text" name="name" id="name" placeholder="eg.Anjali Ashok Ghumare" required>
+
+                <label for="designation">Designation</label>
+                <input type="text" name="designation" id="designation" placeholder="Enter Designation">
+
+                <label for="startDate">Start Date</label>
+                <input type="date" name="startDate" id="startDate">
+
+                <label for="endDate">End Date</label>
+                <input type="date" name="endDate" id="endDate">
+
+                <label for="companyName">Company Name</label>
+                <select name="companyName" id="companyName">
+                    <option value="Demandify Media"> Demandify Media</option>
+                    <option value="Gnosisdata Marketing">Gnosisdata Marketing</option>
+                   
+                </select>
+
+                <label for="managerName">Manager Name</label>
+                <input type="text" name="managerName" id="managerName" placeholder="Enter Manager Name">
+
+                <label for="performance">Performance</label>
+                <input type="text" name="performance" id="performance" placeholder="Enter Performance Remarks">
+
+                <button type="button" onclick="generateExperienceLetter()">Generate Experience Letter</button>
+                <button type="submit">Submit Experience Letter</button>
+            </form>
+        </div>
+
+        <!-- Letter Section -->
+        <div class="letter-section border">
+            <span>
+                <img src="{% static 'Images/Demandify1.png' %}" alt="Company Logo" width="150px" style="margin-left: 70%;">
+                <h5>Experience Letter</h5>
+            </span>
+            <p id="experienceLetterContent">
+                Dear <b>[Salutation].[Employee Name]</b>,<br><br>
+
+                This is to certify that <b>[Employee Name]</b> has worked at <b>[Company Name]</b> as a <b>[Designation]</b>
+                from <b>[Start Date]</b> to <b>[End Date]</b>. During this time, [he/she] reported to <b>[Manager Name]</b> and was
+                responsible for [mention key responsibilities or achievements].<br><br>
+
+                <b>[Employee Name]</b> has shown exceptional performance, demonstrating <b>[Performance]</b> throughout
+                [his/her] tenure with us. [He/She] was a valued member of our team, and we are confident
+                that [he/she] will bring the same level of dedication and professionalism to future endeavors.<br><br>
+
+                We wish <b>[Employee Name]</b> all the best in [his/her] future career.<br><br>
+
+                Sincerely,<br>
+                Viresh Kumbhar<br>
+                Manager<br>
+                <b>[Company Name]</b>
+            </p>
+        </div>
+
+    </div>
+</div>
+     
+<script>
+    // Helper function to capitalize the first letter of each word
+    function capitalizeText(text) {
+        return text.replace(/\b\w/g, function(char) {
+            return char.toUpperCase();
+        });
+    }
+
+    function generateExperienceLetter() {
+        // Get form input values
+        const salutation = document.getElementById('salutation').value;
+        const employeeName = document.getElementById('name').value; 
+        const position = document.getElementById('designation').value; 
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        const companyName = document.getElementById('companyName').value;
+        const managerName = document.getElementById('managerName').value;
+        const performance = document.getElementById('performance').value;
+    
+        // Capitalize inputs
+        const capitalizedEmployeeName = capitalizeText(employeeName);
+        const capitalizedPosition = capitalizeText(position);
+        const capitalizedCompanyName = capitalizeText(companyName);
+        const capitalizedManagerName = capitalizeText(managerName);
+        const capitalizedPerformance = capitalizeText(performance);
+    
+        // Replace placeholders in the letter content
+        let letterContent = document.getElementById('experienceLetterContent').innerHTML;
+        letterContent = letterContent.replace(/\[Salutation\]/g, salutation);
+        letterContent = letterContent.replace(/\[Employee Name\]/g, capitalizedEmployeeName);
+        letterContent = letterContent.replace(/\[Designation\]/g, capitalizedPosition);
+        letterContent = letterContent.replace(/\[Start Date\]/g, startDate);
+        letterContent = letterContent.replace(/\[End Date\]/g, endDate);
+        letterContent = letterContent.replace(/\[Company Name\]/g, capitalizedCompanyName);
+        letterContent = letterContent.replace(/\[Manager Name\]/g, capitalizedManagerName);
+        letterContent = letterContent.replace(/\[Performance\]/g, capitalizedPerformance);
+    
+        // Update the letter content with filled details
+        document.getElementById('experienceLetterContent').innerHTML = letterContent;
+    }
+    
+</script>
+
+</body>
+</html>

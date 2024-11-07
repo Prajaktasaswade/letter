@@ -1,0 +1,219 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Separation Agreement Letter</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/cosmo/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f7f9fc;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 10px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .form-section, .letter-section {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .form-section {
+            background-color: #e9f7fc;
+            border-radius: 10px;
+        }
+
+        .form-section h4 {
+            text-align: center;
+            color: #333333;
+            margin-bottom: 30px;
+        }
+
+        .form-section label {
+            font-weight: bold;
+            color: #333333;
+        }
+
+        .form-section input, .form-section textarea ,select{
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+            box-shadow: none;
+            transition: box-shadow 0.2s ease;
+            text-transform: capitalize !important;
+        }
+
+        .form-section input:hover, .form-section input:focus, .form-section textarea:focus {
+            box-shadow: 0px 0px 5px rgba(59, 162, 199, 0.5);
+        }
+
+        .letter-section {
+            background-repeat: no-repeat;
+            background-size: 300px;
+            background-position:45% 280px;
+            background-image: url("{% static 'Images/demandify.png' %}");
+            border-radius: 10px;
+            padding: 20px;
+            color: #333;
+            padding: 20px;
+        }
+
+        .letter-section h5 {
+            text-align: center;
+            color: #333333;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .letter-section p {
+            font-size: 14px;
+            color: #555555;
+        }
+
+        .letter-section b {
+            font-size: 14px;
+        }
+
+        .d-flex {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .d-flex {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="d-flex">
+
+        <!-- Form Section -->
+        <div class="form-section border">
+            <br>
+            <h4>Separation Agreement Letter Details</h4>
+            <p style="color: red; font-size: small; margin: 20px;">
+                <span style="color: black; font-weight: 600;">Name Field Instruction:</span>
+                "Please enter the full legal name of the candidate as it should appear on official documents,
+                ensuring correct spelling and capitalization."
+            </p>
+            <form id="separationForm"method="POST" action="{% url 'separation_letter' %}">
+                {% csrf_token %}
+                <label for="salutation">Salutation</label><br>
+                <select name="salutation" id="salutation">
+                    <option value="Mr">Mr.</option>
+                    <option value="Mrs">Mrs.</option>
+                    <option value="Ms">Ms.</option>
+                </select>
+
+                <label for="employeeName">Employee Name</label><br>
+                <input type="text" name="employeeName" id="employeeName" placeholder="Enter Employee Name">
+
+                <label for="terminationDate">Termination/Exit Date</label>
+                <input type="date" name="terminationDate" id="terminationDate">
+
+                <label for="finalSettlement">Final Settlement Amount</label>
+                <input type="text" name="finalSettlement" id="finalSettlement" placeholder="Enter Final Settlement Amount">
+
+                <label for="confidentialityTerms">Confidentiality Terms</label>
+                <textarea name="confidentialityTerms" id="confidentialityTerms" rows="5" placeholder="Enter Confidentiality Terms"></textarea>
+
+                <label for="managerName">Manager Name</label>
+                <input type="text" name="managerName" id="managerName" placeholder="Enter Manager Name">
+
+                <label for="companyName">Company Name</label>
+                <select name="companyName" id="companyName">
+                    <option value="Demandify Media"> Demandify Media</option>
+                    <option value="Gnosisdata Marketing">Gnosisdata Marketing</option>
+                   
+                </select>
+
+                <button type="submit">Submit sepration  Letter</button>
+                <button type="button" onclick="generateSeparationAgreementLetter()">Generate Separation Agreement Letter</button>
+            </form>
+        </div>
+
+        <!-- Letter Section -->
+        <div class="letter-section border">
+            <img src="{% static 'Images/Demandify1.png' %}" alt="Company Logo" width="150px" style="margin-left: 70%;"> <br/>
+            <h5>Separation Agreement Letter</h5>
+            <p id="separationLetterContent">
+                Dear <b>[Salutation].[Employee Name]</b>,<br><br>
+
+                This letter confirms the terms and conditions of your separation from <b>[Company Name]</b>, effective <b>[Termination/Exit Date]</b>.<br><br>
+
+                As part of the final settlement, you will receive a total of <b>[Final Settlement Amount]</b>, which includes all outstanding salary, unused vacation pay, and any other entitled benefits.<br><br>
+
+                We would also like to remind you of the confidentiality agreement that you signed upon your employment, and reaffirm that you are expected to uphold the following terms: <b>[Confidentiality Terms]</b>.<br><br>
+
+                Please ensure that all company property, including your ID card, laptop, and any other company assets, are returned on or before your last working day.<br><br>
+
+                We thank you for your contributions to the company and wish you the best in your future endeavors. Should you need any clarification or have further questions regarding the separation process, feel free to contact me.<br><br>
+
+                Sincerely,<br>
+                <b>[Manager Name]</b><br>
+                Manager<br>
+                <b>[Company Name]</b>
+            </p>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function capitalizeText(text) {
+        return text.replace(/\b\w/g, function(char) {
+            return char.toUpperCase();
+        });
+    }
+
+    function generateSeparationAgreementLetter() {
+        // Get form input values
+        const salutation = document.getElementById('salutation').value;
+        const employeeName = document.getElementById('employeeName').value || '[Employee Name]';
+        const terminationDate = document.getElementById('terminationDate').value || '[Termination/Exit Date]';
+        const finalSettlement = document.getElementById('finalSettlement').value || '[Final Settlement Amount]';
+        const confidentialityTerms = document.getElementById('confidentialityTerms').value || '[Confidentiality Terms]';
+        const managerName = document.getElementById('managerName').value || '[Manager Name]';
+        const companyName = document.getElementById('companyName').value || '[Company Name]';
+    
+        // Capitalize inputs
+        const capitalizedEmployeeName = capitalizeText(employeeName);
+        const capitalizedCompanyName = capitalizeText(companyName);
+        const capitalizedManagerName = capitalizeText(managerName);
+        const capitalizedConfidentialityTerms = capitalizeText(confidentialityTerms);
+    
+        // Replace placeholders in the letter content with capitalized values
+        let separationLetterContent = document.getElementById('separationLetterContent').innerHTML;
+        separationLetterContent = separationLetterContent.replace(/\[Salutation\]/g, salutation);
+        separationLetterContent = separationLetterContent.replace(/\[Employee Name\]/g, capitalizedEmployeeName);
+        separationLetterContent = separationLetterContent.replace(/\[Termination\/Exit Date\]/g, terminationDate);
+        separationLetterContent = separationLetterContent.replace(/\[Final Settlement Amount\]/g, finalSettlement);
+        separationLetterContent = separationLetterContent.replace(/\[Confidentiality Terms\]/g, capitalizedConfidentialityTerms);
+        separationLetterContent = separationLetterContent.replace(/\[Manager Name\]/g, capitalizedManagerName);
+        separationLetterContent = separationLetterContent.replace(/\[Company Name\]/g, capitalizedCompanyName);
+    
+        // Update the letter content with filled details
+        document.getElementById('separationLetterContent').innerHTML = separationLetterContent;
+    }
+    
+    
+</script>
+
+
+</body>
+</html>

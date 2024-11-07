@@ -1,0 +1,232 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Review Letter</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/cosmo/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f7f9fc;
+            font-family: Arial, sans-serif;
+        }
+    
+        .container {
+            max-width: 1200px;
+            margin: 10px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+    
+        .form-section, .letter-section {
+            flex: 1;
+            padding: 20px;
+        }
+    
+        .form-section {
+            background-color: #e9f7fc;
+            border-radius: 10px;
+        }
+    
+        .form-section h4 {
+            text-align: center;
+            color: #333333;
+            margin-bottom: 30px;
+        }
+    
+        .form-section label {
+            font-weight: bold;
+            color: #333333;
+        }
+    
+        .form-section input, .form-section textarea ,select {
+            width: calc(100% - 22px); /* Ensures uniform width */
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+            box-shadow: none;
+            transition: box-shadow 0.2s ease;
+            text-transform: capitalize !important;
+            
+        }
+    
+        .form-section textarea {
+            height: 40px; /* Set a uniform height for text areas */
+        }
+    
+        .form-section input:hover, .form-section input:focus, .form-section textarea:focus {
+            box-shadow: 0px 0px 5px rgba(59, 162, 199, 0.5);
+        }
+    
+        .letter-section {
+            background-repeat: no-repeat;
+            background-size: 300px;
+            background-position: 45% 280px;
+            background-image: url("{% static 'Images/demandify.png' %}");
+            border-radius: 10px;
+            padding: 10px;
+            color: #333;
+        }
+    
+        .letter-section h5 {
+            text-align: center;
+            color: #333333;
+            margin-bottom: 20px;
+            font-size: 20px; /* Increased header size */
+        }
+    
+        .letter-section p {
+            font-size: 14px; /* Increased paragraph size */
+            color: #555555;
+        }
+    
+        .letter-section b {
+            font-size: 14px;
+        }
+    
+        .d-flex {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+    
+        @media (max-width: 768px) {
+            .d-flex {
+                flex-direction: column;
+            }
+        }
+    </style>
+    
+</head>
+<body>
+
+<div class="container">
+    <div class="d-flex">
+
+        <!-- Form Section -->
+        <div class="form-section border">
+            <br>
+            <h4>Performance Review Details</h4>
+            <p style="color: red; font-size: small; margin: 20px;">
+                <span style="color: black; font-weight: 600;">Name Field Instruction:</span>
+                "Please enter the full legal name of the candidate as it should appear on official documents,
+                ensuring correct spelling and capitalization."
+            </p>
+            <form id="performanceReviewForm" method="POST" action="{% url 'performance_letter' %}">
+                {% csrf_token %}
+                <label for="salutation">Salutation</label><br>
+                <select name="salutation" id="salutation">
+                    <option value="Mr">Mr.</option>
+                    <option value="Mrs">Mrs.</option>
+                    <option value="Ms">Ms.</option>
+                </select>
+                <br>
+                <label for="employeeName">Employee Name</label>
+                <input type="text" name="employeeName" id="employeeName" placeholder="Enter Employee Name">
+
+                <label for="reviewPeriod">Review Period</label>
+                <input type="text" name="reviewPeriod" id="reviewPeriod" placeholder="Enter Review Period">
+
+                <label for="reviewSummary">Review Summary</label>
+                <textarea name="reviewSummary" id="reviewSummary" rows="5" placeholder="Enter Review Summary"></textarea>
+
+                <label for="strengths">Key Strengths</label>
+                <textarea name="strengths" id="strengths" rows="3" placeholder="Enter Key Strengths"></textarea>
+
+                <label for="areasForImprovement">Areas for Improvement</label>
+                <textarea name="areasForImprovement" id="areasForImprovement" rows="3" placeholder="Enter Areas for Improvement"></textarea>
+
+                <label for="managerName">Manager Name</label>
+                <input type="text" name="managerName" id="managerName" placeholder="Enter Manager Name">
+<br>
+                <label for="companyName">Company Name</label><br>
+                <select name="companyName" id="companyName">
+                    <br>
+                    <option value="Demandify Media"> Demandify Media</option><br>
+                    <option value="Gnosisdata Marketing">Gnosisdata Marketing</option><br>
+                    <br>
+                   
+                </select>
+                <br>
+                
+                <button type="submit">submit performance Letter</button>
+                <button type="button" onclick="generatePerformanceLetter()">Generate Performance Review Letter</button>
+
+            </form>
+        </div>
+
+        <!-- Letter Section -->
+        <div class="letter-section border">
+            <img src="{% static 'Images/Demandify1.png' %}" alt="Company Logo" width="150px" style="margin-left: 70%;"> 
+            <h5>Performance Review Letter</h5>
+            <p id="performanceReviewLetterContent">
+                Dear <b>[Salutation].[Employee Name]</b>,<br><br>
+
+                We are writing to provide feedback on your performance during the period of <b>[Review Period]</b>. Below is a summary of your performance during this period:<br><br>
+
+                <b>Review Summary:</b> <br>[Review Summary]<br><br>
+
+                <b>Key Strengths:</b> <br>[Strengths]<br><br>
+
+                <b>Areas for Improvement:</b> <br>[Areas for Improvement]<br><br>
+
+                We truly appreciate your hard work and contributions to <b>[Company Name]</b>. We encourage you to continue building on your strengths while addressing the areas for improvement noted in this review.<br><br>
+
+                If you have any questions or would like to discuss your review in detail, please feel free to reach out to me.<br><br>
+
+                Sincerely,<br>
+                <b>[Manager Name]</b><br>
+                Manager<br>
+                <b>[Company Name]</b>
+            </p>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // Helper function to capitalize the first letter of each word
+    function capitalizeText(text) {
+        return text.replace(/\b\w/g, function(char) {
+            return char.toUpperCase();
+        });
+    }
+
+    function generatePerformanceLetter() {
+        // Get form input values
+        const salutation = document.getElementById('salutation').value;
+        const employeeName = document.getElementById('employeeName').value; 
+        const reviewPeriod = document.getElementById('reviewPeriod').value; 
+        const reviewSummary = document.getElementById('reviewSummary').value; 
+        const strengths = document.getElementById('strengths').value; 
+        const areasForImprovement = document.getElementById('areasForImprovement').value; 
+        const companyName = document.getElementById('companyName').value;
+        const managerName = document.getElementById('managerName').value;
+
+        // Capitalize inputs
+        const capitalizedEmployeeName = capitalizeText(employeeName);
+        const capitalizedCompanyName = capitalizeText(companyName);
+        const capitalizedManagerName = capitalizeText(managerName);
+    
+        // Replace placeholders in the letter content
+        let letterContent = document.getElementById('performanceReviewLetterContent').innerHTML;
+        letterContent = letterContent.replace(/\[Salutation\]/g, salutation);
+        letterContent = letterContent.replace(/\[Employee Name\]/g, capitalizedEmployeeName);
+        letterContent = letterContent.replace(/\[Review Period\]/g, reviewPeriod);
+        letterContent = letterContent.replace(/\[Review Summary\]/g, reviewSummary);
+        letterContent = letterContent.replace(/\[Strengths\]/g, strengths);
+        letterContent = letterContent.replace(/\[Areas for Improvement\]/g, areasForImprovement);
+        letterContent = letterContent.replace(/\[Company Name\]/g, capitalizedCompanyName);
+        letterContent = letterContent.replace(/\[Manager Name\]/g, capitalizedManagerName);
+
+        // Update the letter content with filled details
+        document.getElementById('performanceReviewLetterContent').innerHTML = letterContent;
+    }
+</script>
+
+
+</html>

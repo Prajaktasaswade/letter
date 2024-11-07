@@ -1,0 +1,219 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transfer Letter</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/cosmo/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f7f9fc;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 10px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .form-section, .letter-section {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .form-section {
+            background-color: #cfeffb;
+            border-radius: 10px;
+        }
+
+        .form-section h4 {
+            text-align: center;
+            color: #333333;
+            margin-bottom: 30px;
+        }
+
+        .form-section label {
+            font-weight: bold;
+            color: #333333;
+        }
+
+        .form-section input,select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+            box-shadow: none;
+            transition: box-shadow 0.2s ease;
+            text-transform: capitalize !important;
+        }
+
+        .form-section input:hover, .form-section input:focus {
+            box-shadow: 0px 0px 5px rgba(59, 162, 199, 0.5);
+        }
+
+        .letter-section {
+            background-repeat: no-repeat;
+            background-size: 300px;
+            background-position:45% 280px;
+            background-image: url("{% static 'Images/demandify.png' %}");
+            border-radius: 10px;
+            padding: 10px;
+            color: #333;
+        }
+
+        .letter-section h5 {
+            text-align: center;
+            color: #333333;
+            margin-bottom: 20px;
+        }
+
+        .letter-section p {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #555555;
+            padding: 0 20px;
+        }
+
+        .d-flex {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .d-flex {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="d-flex">
+
+        <!-- Form Section -->
+        <div class="form-section border">
+            <h4>Transfer Letter Details</h4>
+            <p style="color: red; font-size: small; margin: 20px;">
+                <span style="color: black; font-weight: 600;">Name Field Instruction:</span>
+                "Please enter the full legal name of the candidate as it should appear on official documents,
+                ensuring correct spelling and capitalization."
+            </p>
+            <form id="transferForm"method="POST" action="{% url 'transfer_letter' %}">
+                {% csrf_token %}
+                <label for="salutation">Salutation</label>
+                <select name="salutation" id="salutation">
+                    <option value="Mr">Mr.</option>
+                    <option value="Mrs">Mrs.</option>
+                    <option value="Ms">Ms.</option>
+                </select>
+                
+                <label for="employeeName">Employee Name</label>
+                <input type="text" name="employeeName" id="employeeName" placeholder="Enter Employee Name">
+
+                <label for="currentDepartment">Current Department</label>
+                <input type="text" name="currentDepartment" id="currentDepartment" placeholder="Enter Current Department">
+
+                <label for="newDepartment">New Department</label>
+                <input type="text" name="newDepartment" id="newDepartment" placeholder="Enter New Department">
+
+                <label for="newLocation">New Location</label>
+                <input type="text" name="newLocation" id="newLocation" placeholder="Enter New Location">
+
+                <label for="effectiveDate">Effective Date</label>
+                <input type="date" name="effectiveDate" id="effectiveDate">
+
+                <label for="managerName">Manager Name</label>
+                <input type="text" name="managerName" id="managerName" placeholder="Enter Manager Name">
+
+                <label for="companyName">Company Name</label>
+                <select name="companyName" id="companyName">
+                    <option value="Demandify Media"> Demandify Media</option>
+                    <option value="Gnosisdata Marketing">Gnosisdata Marketing</option>
+                   
+                </select>
+                
+                <button type="submit">Submit Promotion Letter</button>
+                <button type="button" onclick="generateTransferLetter()">Generate Transfer Letter</button>
+
+            </form>
+        </div>
+
+        <!-- Letter Section -->
+        <div class="letter-section border">
+            <span>
+                <img src="{% static 'Images/Demandify1.png' %}" alt="Company Logo" width="150px" style="margin-left: 70%;"> 
+            <h5>Transfer Letter</h5> </span>
+            <p id="transferLetterContent">
+                Dear <b>[Salutation].[Employee Name]</b>,<br><br>
+
+                We are writing to inform you of your transfer to the <b>[New Department]</b> department at <b>[New Location]</b>, effective from <b>[Effective Date]</b>. 
+                This decision has been made considering your skills and the requirements of the new department.<br><br>
+
+                In your new role, you will continue to report to <b>[Manager Name]</b> and be expected to meet the objectives outlined for your new department. 
+                Your compensation and benefits will remain unchanged during this transition.<br><br>
+
+                We are confident that your experience and expertise will be a great fit for the <b>[New Department]</b>. 
+                Should you have any questions or concerns, please feel free to reach out to us.<br><br>
+
+                We wish you success in your new role at <b>[Company Name]</b>.<br><br>
+
+                Sincerely,<br>
+                <b>[Manager Name]</b><br>
+                Manager<br>
+                <b>[Company Name]</b>
+            </p>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function capitalizeText(text) {
+        return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+    }
+
+    function generateTransferLetter() {
+        // Get form input values
+        const salutation = document.getElementById('salutation').value;
+        const employeeName = document.getElementById('employeeName').value || '[Employee Name]';
+        const currentDepartment = document.getElementById('currentDepartment').value || '[Current Department]';
+        const newDepartment = document.getElementById('newDepartment').value || '[New Department]';
+        const newLocation = document.getElementById('newLocation').value || '[New Location]';
+        const effectiveDate = document.getElementById('effectiveDate').value || '[Effective Date]';
+        const managerName = document.getElementById('managerName').value || '[Manager Name]';
+        const companyName = document.getElementById('companyName').value || '[Company Name]';
+    
+        // Capitalize inputs
+        const capitalizedEmployeeName = capitalizeText(employeeName);
+        const capitalizedCurrentDepartment = capitalizeText(currentDepartment);
+        const capitalizedNewDepartment = capitalizeText(newDepartment);
+        const capitalizedNewLocation = capitalizeText(newLocation);
+        const capitalizedManagerName = capitalizeText(managerName);
+        const capitalizedCompanyName = capitalizeText(companyName);
+    
+        // Replace placeholders in the letter content with capitalized values
+        let transferLetterContent = document.getElementById('transferLetterContent').innerHTML;
+        transferLetterContent = transferLetterContent.replace(/\[Salutation\]/g, salutation);
+        transferLetterContent = transferLetterContent.replace(/\[Employee Name\]/g, capitalizedEmployeeName);
+        transferLetterContent = transferLetterContent.replace(/\[Current Department\]/g, capitalizedCurrentDepartment);
+        transferLetterContent = transferLetterContent.replace(/\[New Department\]/g, capitalizedNewDepartment);
+        transferLetterContent = transferLetterContent.replace(/\[New Location\]/g, capitalizedNewLocation);
+        transferLetterContent = transferLetterContent.replace(/\[Effective Date\]/g, effectiveDate);
+        transferLetterContent = transferLetterContent.replace(/\[Manager Name\]/g, capitalizedManagerName);
+        transferLetterContent = transferLetterContent.replace(/\[Company Name\]/g, capitalizedCompanyName);
+    
+        // Update the letter content with filled details
+        document.getElementById('transferLetterContent').innerHTML = transferLetterContent;
+    }
+</script>
+
+</body>
+</html>

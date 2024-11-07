@@ -1,0 +1,200 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Termination Letter</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/cosmo/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f7f9fc;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 10px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .form-section, .letter-section {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .form-section {
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-image: url('./Images/bg11.jpg');
+            /* background-color: #f7d7da; */
+            border-radius: 10px;
+        }
+
+        .form-section h4 {
+            text-align: center;
+            color: #333333;
+            margin-bottom: 30px;
+        }
+
+        .form-section label {
+            font-weight: bold;
+            color: #333333;
+        }
+
+        .form-section input, .form-section textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+            box-shadow: none;
+            transition: box-shadow 0.2s ease;
+        }
+
+        .form-section input:hover, .form-section input:focus, .form-section textarea:hover, .form-section textarea:focus {
+            box-shadow: 0px 0px 5px rgba(255, 0, 0, 0.5);
+        }
+
+        .letter-section {
+            background-repeat: no-repeat;
+            background-size: 300px;
+            background-position: 45% 280px;
+            background-image: url("{% static 'Images/Demandifylogo.png' %}");
+            border-radius: 10px;
+            padding: 20px;
+            color: #333;
+        }
+
+        /* Increased letter font sizes */
+        .letter-section h5 {
+            text-align: center;
+            color: #333333;
+            margin-bottom: 20px;
+            font-size: 22px; /* Increased header size */
+        }
+
+        .letter-section p {
+            font-size: 14px; /* Increased paragraph size */
+            /* line-height: 1.8; Improved line spacing */
+            color: #555555;
+            padding: 0 20px;
+        }
+
+        .letter-section b {
+            font-size: 14px; /* Emphasized bold text with larger size */
+        }
+
+        .d-flex {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .d-flex {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="d-flex">
+
+        <!-- Form Section -->
+        <div class="form-section border">
+            <h4>Termination Letter Details</h4>
+            <form id="terminationForm"method="POST" action="{% url 'termination_letter' %}">
+                {% csrf_token %}
+                <label for="employeeName">Employee Name</label>
+                <input type="text" name="employeeName" id="employeeName" placeholder="Enter Employee Name">
+
+                <label for="terminationDate">Termination Date</label>
+                <input type="date" name="terminationDate" id="terminationDate">
+
+                <label for="position">Position</label>
+                <input type="text" name="position" id="position" placeholder="Enter Employee Position">
+
+                <label for="terminationReason">Termination Reason</label>
+                <textarea name="terminationReason" id="terminationReason" rows="4" placeholder="Enter Reason for Termination"></textarea>
+
+                <label for="finalDetails">Final Details (e.g., severance, last working day)</label>
+                <textarea name="finalDetails" id="finalDetails" rows="4" placeholder="Enter Final Details"></textarea>
+
+                <label for="managerName">Manager's Name</label>
+                <input type="text" name="managerName" id="managerName" placeholder="Enter Manager's Name">
+
+                <label for="companyName">Company Name</label>
+                <input type="text" name="companyName" id="companyName" placeholder="Enter Company Name">
+                
+                <button type="submit">Submit Resignation Letter</button>
+                <button type="button" onclick="generateTerminationLetter()">Generate Termination Letter</button>
+            </form>
+        </div>
+
+        <!-- Letter Section -->
+        <div class="letter-section border">
+            <img src="{% static 'Images/Demandify1.png' %}" alt="Company Logo" width="150px" style="margin-left: 70%;"> <br/>
+            <h5>Termination Letter</h5>
+            <p id="terminationLetterContent">
+                Dear <b>[Employee Name]</b>,<br><br>
+
+                We regret to inform you that your employment as <b>[Position]</b> at <b>[Company Name]</b> will be terminated effective <b>[Termination Date]</b>.<br><br>
+
+                The decision to terminate your employment was based on the following reason: <b>[Termination Reason]</b>. We have taken this decision after careful consideration of your performance, behavior, and adherence to company policies.<br><br>
+
+                Please note that your final working day will be <b>[Termination Date]</b>. You will be entitled to any accrued vacation days and outstanding salary, which will be processed as part of your final paycheck. Additionally, any severance benefits or other compensations, as outlined in your contract, will be provided. Details of your final settlement are as follows: <b>[Final Details]</b>.<br><br>
+
+                You are required to return all company property in your possession, including but not limited to laptops, access cards, and any other materials belonging to <b>[Company Name]</b> before the termination date. Failure to do so may result in deductions from your final paycheck.<br><br>
+
+                Please note that your health benefits will remain active until <b>[Termination Date]</b>, after which you will be responsible for securing your own health coverage. We recommend contacting our HR department for assistance in transitioning your benefits or discussing any questions you may have.<br><br>
+
+                We understand that this may be a difficult time for you, and we want to offer you any support necessary during this transition. If you would like to discuss this further, please feel free to contact either myself or the HR department.<br><br>
+
+                We sincerely appreciate your contributions to <b>[Company Name]</b> and wish you success in your future endeavors.<br><br>
+
+                Sincerely,<br>
+                <b>[Manager's Name]</b><br>
+                Manager<br>
+                <b>[Company Name]</b>
+            </p>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function generateTerminationLetter() {
+        // Get form input values
+        const employeeName = document.getElementById('employeeName').value || '[Employee Name]';
+        const terminationDate = document.getElementById('terminationDate').value || '[Termination Date]';
+        const position = document.getElementById('position').value || '[Position]';
+        const terminationReason = document.getElementById('terminationReason').value || '[Termination Reason]';
+        const finalDetails = document.getElementById('finalDetails').value || '[Final Details]';
+        const managerName = document.getElementById('managerName').value || '[Manager\'s Name]';
+        const companyName = document.getElementById('companyName').value || '[Company Name]';
+
+        // Replace placeholders in the letter content
+        let terminationLetterContent = document.getElementById('terminationLetterContent').innerHTML;
+
+        terminationLetterContent = terminationLetterContent.replace(/\[Employee Name\]/g, employeeName);
+        terminationLetterContent = terminationLetterContent.replace(/\[Termination Date\]/g, terminationDate);
+        terminationLetterContent = terminationLetterContent.replace(/\[Position\]/g, position);
+        terminationLetterContent = terminationLetterContent.replace(/\[Termination Reason\]/g, terminationReason);
+        terminationLetterContent = terminationLetterContent.replace(/\[Final Details\]/g, finalDetails);
+        terminationLetterContent = terminationLetterContent.replace(/\[Manager's Name\]/g, managerName);
+        terminationLetterContent = terminationLetterContent.replace(/\[Company Name\]/g, companyName);
+
+        // Update the letter content with filled details
+        document.getElementById('terminationLetterContent').innerHTML = terminationLetterContent;
+    }
+</script>
+
+</body>
+</html>
