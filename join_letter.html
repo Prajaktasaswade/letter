@@ -1,4 +1,4 @@
-{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -110,7 +110,7 @@
                      ensuring correct spelling and capitalization."
                 </p>
                 <form id="joiningForm" method="POST" action="{% url 'join_letter' %}">
-                    {% csrf_token %}
+                    
 
                     <label for="salutation">Salutation</label><br>
                     <select name="salutation" id="salutation">
