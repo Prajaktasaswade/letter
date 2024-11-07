@@ -37,7 +37,7 @@ def capitalize_words(text):
 
 
 
-#def joining_letter_view(request):
+def joining_letter_view(request):
     if request.method == 'POST':
         joining_letter = JoiningLetter(
             salutation=request.POST['salutation'],
@@ -55,7 +55,7 @@ def capitalize_words(text):
 def index_page(request):
     return render(request, 'index.html')
 
-#def experience_letter_view(request):
+def experience_letter_view(request):
     if request.method == 'POST':
         experience_letter = ExperienceLetter(
             salutation=request.POST['salutation'],
@@ -72,7 +72,7 @@ def index_page(request):
     return render(request, 'experience_letter.html')
 
 
-#def interviewcall_letter_view(request):
+def interviewcall_letter_view(request):
     if request.method == 'POST':
         interviewcall_letter = InterviewcallLetter(
             salutation=request.POST['salutation'],
@@ -88,7 +88,7 @@ def index_page(request):
     return render(request, 'interviewcall_letter.html')
     
 
-#def promotion_letter_view(request):
+def promotion_letter_view(request):
     if request.method == 'POST':
         promotion_letter = PromotionLetter(
             salutation=request.POST['salutation'],
@@ -106,7 +106,7 @@ def index_page(request):
 
 
 
-#def salary_increase_letter_view(request):
+def salary_increase_letter_view(request):
     if request.method == 'POST':
         # Capture form data and save to the database
         salary_increase_letter = SalaryIncreaseLetter(
@@ -124,7 +124,7 @@ def index_page(request):
 
 
 
-#def transfer_letter_view(request):
+def transfer_letter_view(request):
     if request.method == 'POST':
         # Capture form data and save it to the database
         transfer_letter = TransferLetter(
@@ -142,7 +142,7 @@ def index_page(request):
     return render(request, 'transfer_letter.html')
 
 
-#def leave_approval_view(request):
+def leave_approval_view(request):
     if request.method == 'POST':
         # Capture form data and save it to the database
         leave_approval = LeaveApproval(
@@ -158,7 +158,7 @@ def index_page(request):
 
     return render(request, 'leaveapproval_letter.html')
 
-#def resignation_letter_view(request):
+def resignation_letter_view(request):
     if request.method == 'POST':
         # Capture form data and save it to the database
         resignation_letter = ResignationLetter(
@@ -173,7 +173,7 @@ def index_page(request):
 
     return render(request, 'resignation_letter.html')
 
-#def termination_letter_view(request):
+def termination_letter_view(request):
     if request.method == 'POST':
         # Capture form data and save it to the database
         termination_letter = TerminationLetter(
@@ -189,7 +189,7 @@ def index_page(request):
 
     return render(request, 'termination_letter.html')
 
-#def separation_letter_view(request):
+def separation_letter_view(request):
     if request.method == 'POST':
         
         separation_agreement_letter = SeparationAgreementLetter(
@@ -205,7 +205,7 @@ def index_page(request):
 
     return render(request, 'separation_letter.html')
 
-#def warning_letter_view(request):
+def warning_letter_view(request):
     if request.method == "POST":
         warning_letter = WarningLetter(
             salutation=request.POST['salutation'],
@@ -220,7 +220,7 @@ def index_page(request):
     return render(request, 'warning_letter.html')
 
 
-#def performance_letter_view(request):
+def performance_letter_view(request):
     if request.method == 'POST':
         # Capture form data and save it to the database
         performance_review = PerformanceReviewLetter(
@@ -236,7 +236,7 @@ def index_page(request):
         performance_review.save()  
     return render(request, 'performance_letter.html')
 
-#def reference_letter_view(request):
+def reference_letter_view(request):
     if request.method == 'POST':
         
         reference_letter = ReferenceLetter(
