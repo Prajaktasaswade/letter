@@ -251,30 +251,46 @@
                     document.getElementById('joiningLetterContent').innerHTML = letterContent;
                 }
                 function downloadPDF() {
-                    const letterContent = document.querySelector('.letter-section');
-                    
-                    // Configure html2canvas to capture the letter with high quality
-                    html2canvas(letterContent, { scale: 2 }).then((canvas) => {
-                        const imgData = canvas.toDataURL('image/png');
-                
-                        // Create a PDF with dimensions that can fit the content proportionally
-                        const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
-                        const pdfWidth = pdf.internal.pageSize.getWidth();
-                        const pdfHeight = pdf.internal.pageSize.getHeight();
-                
-                        // Calculate dimensions to fit the content proportionally
-                        const imgWidth = pdfWidth - 20; // Leave margin on both sides
-                        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                
-                        // Add the image to the PDF, centered, and fitting within page bounds
-                        let yPosition = 10;
-                        pdf.addImage(imgData, 'PNG', 10, yPosition, imgWidth, imgHeight);
-                
-                        // Save the PDF
-                        pdf.save('joining_letter.pdf');
-                    });
-                }
-                
+    const letterContent = document.querySelector('.letter-section');
+
+    // Configure html2canvas to capture the main letter content with high quality
+    html2canvas(letterContent, { scale: 2 }).then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+
+        // Calculate dimensions to fit the content proportionally
+        const imgWidth = pdfWidth - 20; // Leave margin on both sides
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        // Add the main content to the PDF, centered, and fitting within page bounds
+        pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+
+        // Add the footer image separately at the bottom
+        const footerImg = new Image();
+        footerImg.src = 'footer2.png';
+        
+        // Once the footer image loads, add it to the PDF and save
+        footerImg.onload = function () {
+            const footerHeight = 20; // Desired height of the footer image
+            const footerWidth = (footerImg.width * footerHeight) / footerImg.height;
+            
+            // Position the footer image at the bottom center
+            pdf.addImage(
+                footerImg,
+                'PNG',
+                (pdfWidth - footerWidth) / 2, // Center horizontally
+                pdfHeight - footerHeight - 10, // Position at the bottom with a margin
+                footerWidth,
+                footerHeight
+            );
+
+            // Save the PDF after adding the footer
+            pdf.save('joining_letter.pdf');
+        };
+    });
+}
 
 </script>
 
