@@ -1,4 +1,4 @@
-{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -61,7 +61,7 @@
             background-repeat: no-repeat;
             background-size: 300px;
             background-position: 45% 280px;
-            background-image: url("{% static 'Images/demandify.png' %}");
+            background-image: url('demandify.png');
             border-radius: 10px;
             padding: 20px;
             color: #333;
@@ -107,8 +107,8 @@
                 "Please enter the full legal name of the candidate as it should appear on official documents,
                 ensuring correct spelling and capitalization."
             </p>
-            <form id="resignationForm" method="POST" action="{% url 'resignation_letter' %}">
-                {% csrf_token %}
+            <form id="resignationForm" method="POST" action="resignation_letter.html">
+               
                 <label for="salutation">Salutation</label>
                 <select name="salutation" id="salutation">
                     <option value="Mr">Mr.</option>
@@ -135,13 +135,14 @@
                 </select>
 
                 <button type="submit">Submit Resignation Letter</button>
-                <button type="button" onclick="generateResignationAcceptanceLetter()">Generate Resignation Acceptance Letter</button>
+                <button type="button" onclick="generateResignationAcceptanceLetter()">Generate Resignation  Letter</button>
+                <button type="button" onclick="downloadPDF()">Download  Letter</button>
             </form>
         </div>
 
         <!-- Letter Section -->
         <div class="letter-section border">
-            <img src="{% static 'Images/Demandify1.png' %}" alt="Company Logo" width="150px" style="margin-left: 70%;"> <br/>
+            <img src="Demandify1.png" alt="Company Logo" width="150px" style="margin-left: 70%;"> <br/>
             <h5>Resignation Acceptance Letter</h5>
             <p id="resignationLetterContent">
                 Dear <b>[Salutation] [Employee Name]</b>,<br><br>
@@ -166,41 +167,83 @@
     </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
-    // Helper function to capitalize the first letter of each word
-    function capitalizeText(text) {
-        return text.replace(/\b\w/g, function(char) {
-            return char.toUpperCase();
-        });
-    }
-
-    function generateResignationAcceptanceLetter() {
-        // Get form input values
-        const salutation = document.getElementById('salutation').value;
-        const employeeName = document.getElementById('employeeName').value || '[Employee Name]';
-        const resignationDate = document.getElementById('resignationDate').value || '[Resignation Date]';
-        const lastWorkingDay = document.getElementById('lastWorkingDay').value || '[Last Working Day]';
-        const managerName = document.getElementById('managerName').value || '[Manager Name]';
-        const companyName = document.getElementById('companyName').value || '[Company Name]';
-
-        // Capitalize inputs
-        const capitalizedEmployeeName = capitalizeText(employeeName);
-        const capitalizedCompanyName = capitalizeText(companyName);
-        const capitalizedManagerName = capitalizeText(managerName);
-
-        // Replace placeholders in the letter content
-        let resignationLetterContent = document.getElementById('resignationLetterContent').innerHTML;
-        resignationLetterContent = resignationLetterContent.replace(/\[Salutation\]/g, salutation);
-        resignationLetterContent = resignationLetterContent.replace(/\[Employee Name\]/g, capitalizedEmployeeName);
-        resignationLetterContent = resignationLetterContent.replace(/\[Resignation Date\]/g, resignationDate);
-        resignationLetterContent = resignationLetterContent.replace(/\[Last Working Day\]/g, lastWorkingDay);
-        resignationLetterContent = resignationLetterContent.replace(/\[Manager Name\]/g, capitalizedManagerName);
-        resignationLetterContent = resignationLetterContent.replace(/\[Company Name\]/g, capitalizedCompanyName);
-
-        // Update the letter content with filled details
-        document.getElementById('resignationLetterContent').innerHTML = resignationLetterContent;
-    }
+        // Helper function to capitalize the first letter of each word
+        function capitalizeText(text) {
+            return text.replace(/\b\w/g, function(char) {
+                return char.toUpperCase();
+            });
+        }
+    
+        function generateResignationAcceptanceLetter() {
+            // Get form input values
+            const salutation = document.getElementById('salutation').value;
+            const employeeName = document.getElementById('employeeName').value || '[Employee Name]';
+            const resignationDate = document.getElementById('resignationDate').value || '[Resignation Date]';
+            const lastWorkingDay = document.getElementById('lastWorkingDay').value || '[Last Working Day]';
+            const managerName = document.getElementById('managerName').value || '[Manager Name]';
+            const companyName = document.getElementById('companyName').value || '[Company Name]';
+    
+            // Capitalize inputs
+            const capitalizedEmployeeName = capitalizeText(employeeName);
+            const capitalizedCompanyName = capitalizeText(companyName);
+            const capitalizedManagerName = capitalizeText(managerName);
+    
+            // Template for resignation acceptance letter content
+            let resignationLetterContent = `
+                Dear <b>${salutation} ${capitalizedEmployeeName}</b>,<br><br>
+    
+                We have received your resignation letter dated <b>${resignationDate}</b>, and we acknowledge and accept your decision to resign from your position at <b>${capitalizedCompanyName}</b>.<br><br>
+    
+                Your last working day will be <b>${lastWorkingDay}</b>. We appreciate the professionalism you have shown during your tenure and wish to thank you for your valuable contributions to the company.<br><br>
+    
+                We will process all the necessary paperwork related to your final settlement, including any outstanding salary, unused leave encashment, and other benefits that you are entitled to. Please make sure to return all company property, including your laptop, access cards, and other belongings, before your last working day.<br><br>
+    
+                We truly appreciate your efforts and contributions during your time here, and we wish you continued success in your future endeavors.<br><br>
+    
+                If you have any questions during this transition period, please feel free to reach out to me or the HR department.<br><br>
+    
+                Sincerely,<br>
+                <b>${capitalizedManagerName}</b><br>
+                Manager<br>
+                <b>${capitalizedCompanyName}</b><br><br><br>
+            <footer id="pdf-footer" style="text-align: center;">
+               <img src="footer2.png" alt="Footer Image" style="width: 60%; height: auto; margin-left:15px;">
+            </footer>
+            `;
+    
+            // Update the letter content in the HTML
+            document.getElementById('resignationLetterContent').innerHTML = resignationLetterContent;
+        }
+        function downloadPDF() {
+            const letterContent = document.querySelector('.letter-section');
+            
+            // Configure html2canvas to capture the letter with high quality
+            html2canvas(letterContent, { scale: 2 }).then((canvas) => {
+                const imgData = canvas.toDataURL('image/png');
+        
+                // Create a PDF with dimensions that can fit the content proportionally
+                const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+        
+                // Calculate dimensions to fit the content proportionally
+                const imgWidth = pdfWidth - 20; // Leave margin on both sides
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        
+                // Add the image (letter content) to the PDF, centered and fitting within page bounds
+                let yPosition = 10;
+                pdf.addImage(imgData, 'PNG', 10, yPosition, imgWidth, imgHeight);
+        
+                // Save the PDF
+                pdf.save('Resignation_letter.pdf');
+            });
+        }
 </script>
+    
+
 
 </body>
 </html>
