@@ -1,4 +1,4 @@
-{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -66,7 +66,7 @@
             background-repeat: no-repeat;
             background-size: 300px;
             background-position: 45% 280px;
-            background-image: url("{% static 'Images/demandify.png' %}");
+            background-image: url('demandify.png');
             border-radius: 10px;
             padding: 20px;
             color: #333;
@@ -113,8 +113,8 @@
                 ensuring correct spelling and capitalization."
             </p>
            
-            <form id="experienceForm" method="POST" action="{% url 'experience_letter' %}">
-                {% csrf_token %}
+            <form id="experienceForm" method="POST" action="experience_letter.html">
+                
                 <label for="salutation">Salutation</label><br>
                 <select name="salutation" id="salutation">
                     <option value="Mr">Mr.</option>
@@ -147,15 +147,20 @@
                 <label for="performance">Performance</label>
                 <input type="text" name="performance" id="performance" placeholder="Enter Performance Remarks">
 
+                <label for="keyAchievements">key of achievements</label>
+                <input type="text" name="keyAchievements" id="keyAchievements" placeholder="Enter key of achievements ">
+
+
                 <button type="button" onclick="generateExperienceLetter()">Generate Experience Letter</button>
                 <button type="submit">Submit Experience Letter</button>
+                <button type="button" onclick="downloadPDF()">Download  Letter</button>
             </form>
         </div>
 
         <!-- Letter Section -->
         <div class="letter-section border">
             <span>
-                <img src="{% static 'Images/Demandify1.png' %}" alt="Company Logo" width="150px" style="margin-left: 70%;">
+                <img src="Demandify1.png" alt="Company Logo" width="150px" style="margin-left: 70%;">
                 <h5>Experience Letter</h5>
             </span>
             <p id="experienceLetterContent">
@@ -163,7 +168,7 @@
 
                 This is to certify that <b>[Employee Name]</b> has worked at <b>[Company Name]</b> as a <b>[Designation]</b>
                 from <b>[Start Date]</b> to <b>[End Date]</b>. During this time, [he/she] reported to <b>[Manager Name]</b> and was
-                responsible for [mention key responsibilities or achievements].<br><br>
+                responsible for <b>[keyAchievements]</b>.<br><br>
 
                 <b>[Employee Name]</b> has shown exceptional performance, demonstrating <b>[Performance]</b> throughout
                 [his/her] tenure with us. [He/She] was a valued member of our team, and we are confident
@@ -181,48 +186,73 @@
     </div>
 </div>
      
-<script>
-    // Helper function to capitalize the first letter of each word
-    function capitalizeText(text) {
-        return text.replace(/\b\w/g, function(char) {
-            return char.toUpperCase();
-        });
-    }
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        function capitalizeText(text) {
+            return text.replace(/\b\w/g, function(char) {
+                return char.toUpperCase();
+            });
+        }
+    
+        function generateExperienceLetter() {
+            const salutation = document.getElementById('salutation').value;
+            const employeeName = document.getElementById('name').value || '[Employee Name]';
+            const position = document.getElementById('designation').value || '[Designation]';
+            const startDate = document.getElementById('startDate').value || '[Start Date]';
+            const endDate = document.getElementById('endDate').value || '[End Date]';
+            const companyName = document.getElementById('companyName').value || '[Company Name]';
+            const managerName = document.getElementById('managerName').value || '[Manager Name]';
+            const performance = document.getElementById('performance').value || '[Performance]';
+            const keyAchievements = document.getElementById('keyAchievements').value || '[Key Achievements]';
+    
+            const letterContent = `
+                Dear <b>${salutation}.${capitalizeText(employeeName)}</b>,<br><br>
+                This is to certify that <b>${capitalizeText(employeeName)}</b> has worked at <b>${capitalizeText(companyName)}</b> 
+                as a <b>${capitalizeText(position)}</b> from <b>${startDate}</b> to <b>${endDate}</b>. During this time, 
+                [he/she] reported to <b>${capitalizeText(managerName)}</b> and was responsible for <b>${capitalizeText(keyAchievements)}</b>.<br><br>
+                <b>${capitalizeText(employeeName)}</b> has shown exceptional performance, demonstrating <b>${capitalizeText(performance)}</b>
+                throughout [his/her] tenure with us. [He/She] was a valued member of our team, and we are confident 
+                that [he/she] will bring the same level of dedication and professionalism to future endeavors.<br><br>
+                We wish <b>${capitalizeText(employeeName)}</b> all the best in [his/her] future career.<br><br>
+                Sincerely,<br>
+                Viresh Kumbhar<br>Manager<br>
+                <b>${capitalizeText(companyName)}</b><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+                <footer id="pdf-footer" style="text-align: center;">
+                   <img src="footer2.png" alt="Footer Image" style="width: 60%; height: auto; margin-left:15px;">
+                </footer>
+            `;
+            
+            document.getElementById('experienceLetterContent').innerHTML = letterContent;
+        }
+    
+        function downloadPDF() {
+            const letterContent = document.querySelector('.letter-section');
+            
+            // Configure html2canvas to capture the letter with high quality
+            html2canvas(letterContent, { scale: 2 }).then((canvas) => {
+                const imgData = canvas.toDataURL('image/png');
+        
+                // Create a PDF with dimensions that can fit the content proportionally
+                const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+        
+                // Calculate dimensions to fit the content proportionally
+                const imgWidth = pdfWidth - 20; // Leave margin on both sides
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        
+                // Add the image (letter content) to the PDF, centered and fitting within page bounds
+                let yPosition = 10;
+                pdf.addImage(imgData, 'PNG', 10, yPosition, imgWidth, imgHeight);
+        
+                // Save the PDF
+                pdf.save('experience_letter.pdf');
+            });
+        }
+    </script>
+    
 
-    function generateExperienceLetter() {
-        // Get form input values
-        const salutation = document.getElementById('salutation').value;
-        const employeeName = document.getElementById('name').value; 
-        const position = document.getElementById('designation').value; 
-        const startDate = document.getElementById('startDate').value;
-        const endDate = document.getElementById('endDate').value;
-        const companyName = document.getElementById('companyName').value;
-        const managerName = document.getElementById('managerName').value;
-        const performance = document.getElementById('performance').value;
-    
-        // Capitalize inputs
-        const capitalizedEmployeeName = capitalizeText(employeeName);
-        const capitalizedPosition = capitalizeText(position);
-        const capitalizedCompanyName = capitalizeText(companyName);
-        const capitalizedManagerName = capitalizeText(managerName);
-        const capitalizedPerformance = capitalizeText(performance);
-    
-        // Replace placeholders in the letter content
-        let letterContent = document.getElementById('experienceLetterContent').innerHTML;
-        letterContent = letterContent.replace(/\[Salutation\]/g, salutation);
-        letterContent = letterContent.replace(/\[Employee Name\]/g, capitalizedEmployeeName);
-        letterContent = letterContent.replace(/\[Designation\]/g, capitalizedPosition);
-        letterContent = letterContent.replace(/\[Start Date\]/g, startDate);
-        letterContent = letterContent.replace(/\[End Date\]/g, endDate);
-        letterContent = letterContent.replace(/\[Company Name\]/g, capitalizedCompanyName);
-        letterContent = letterContent.replace(/\[Manager Name\]/g, capitalizedManagerName);
-        letterContent = letterContent.replace(/\[Performance\]/g, capitalizedPerformance);
-    
-        // Update the letter content with filled details
-        document.getElementById('experienceLetterContent').innerHTML = letterContent;
-    }
-    
-</script>
 
 </body>
 </html>
