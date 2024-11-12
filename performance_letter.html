@@ -1,4 +1,4 @@
-{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -66,7 +66,7 @@
             background-repeat: no-repeat;
             background-size: 300px;
             background-position: 45% 280px;
-            background-image: url("{% static 'Images/demandify.png' %}");
+            background-image: url('demandify.png');
             border-radius: 10px;
             padding: 10px;
             color: #333;
@@ -116,8 +116,8 @@
                 "Please enter the full legal name of the candidate as it should appear on official documents,
                 ensuring correct spelling and capitalization."
             </p>
-            <form id="performanceReviewForm" method="POST" action="{% url 'performance_letter' %}">
-                {% csrf_token %}
+            <form id="performanceReviewForm" method="POST" action="performance_letter.html">
+                
                 <label for="salutation">Salutation</label><br>
                 <select name="salutation" id="salutation">
                     <option value="Mr">Mr.</option>
@@ -154,14 +154,15 @@
                 <br>
                 
                 <button type="submit">submit performance Letter</button>
-                <button type="button" onclick="generatePerformanceLetter()">Generate Performance Review Letter</button>
+                <button type="button" onclick="generatePerformanceReviewLetter()">Generate Performance  Letter</button>
+                <button type="button" onclick="downloadPDF()">Download  Letter</button>
 
             </form>
         </div>
 
         <!-- Letter Section -->
         <div class="letter-section border">
-            <img src="{% static 'Images/Demandify1.png' %}" alt="Company Logo" width="150px" style="margin-left: 70%;"> 
+            <img src="Demandify1.png" alt="Company Logo" width="150px" style="margin-left: 70%;"> 
             <h5>Performance Review Letter</h5>
             <p id="performanceReviewLetterContent">
                 Dear <b>[Salutation].[Employee Name]</b>,<br><br>
@@ -188,44 +189,84 @@
     </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
-    // Helper function to capitalize the first letter of each word
-    function capitalizeText(text) {
-        return text.replace(/\b\w/g, function(char) {
-            return char.toUpperCase();
-        });
+    function capitalizeFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
     }
-
-    function generatePerformanceLetter() {
+    
+    function capitalizeWords(sentence) {
+        return sentence.split(' ').map(capitalizeFirstLetter).join(' ');
+    }
+    
+    // Template for performance review letter content
+    function generatePerformanceReviewLetter() {
         // Get form input values
         const salutation = document.getElementById('salutation').value;
-        const employeeName = document.getElementById('employeeName').value; 
-        const reviewPeriod = document.getElementById('reviewPeriod').value; 
-        const reviewSummary = document.getElementById('reviewSummary').value; 
-        const strengths = document.getElementById('strengths').value; 
-        const areasForImprovement = document.getElementById('areasForImprovement').value; 
-        const companyName = document.getElementById('companyName').value;
-        const managerName = document.getElementById('managerName').value;
-
-        // Capitalize inputs
-        const capitalizedEmployeeName = capitalizeText(employeeName);
-        const capitalizedCompanyName = capitalizeText(companyName);
-        const capitalizedManagerName = capitalizeText(managerName);
+        const employeeName = document.getElementById('employeeName').value || '[Employee Name]';
+        const reviewPeriod = document.getElementById('reviewPeriod').value || '[Review Period]';
+        const reviewSummary = document.getElementById('reviewSummary').value || '[Review Summary]';
+        const strengths = document.getElementById('strengths').value || '[Strengths]';
+        const areasForImprovement = document.getElementById('areasForImprovement').value || '[Areas for Improvement]';
+        const managerName = document.getElementById('managerName').value || '[Manager Name]';
+        const companyName = document.getElementById('companyName').value || '[Company Name]';
     
-        // Replace placeholders in the letter content
-        let letterContent = document.getElementById('performanceReviewLetterContent').innerHTML;
-        letterContent = letterContent.replace(/\[Salutation\]/g, salutation);
-        letterContent = letterContent.replace(/\[Employee Name\]/g, capitalizedEmployeeName);
-        letterContent = letterContent.replace(/\[Review Period\]/g, reviewPeriod);
-        letterContent = letterContent.replace(/\[Review Summary\]/g, reviewSummary);
-        letterContent = letterContent.replace(/\[Strengths\]/g, strengths);
-        letterContent = letterContent.replace(/\[Areas for Improvement\]/g, areasForImprovement);
-        letterContent = letterContent.replace(/\[Company Name\]/g, capitalizedCompanyName);
-        letterContent = letterContent.replace(/\[Manager Name\]/g, capitalizedManagerName);
-
-        // Update the letter content with filled details
-        document.getElementById('performanceReviewLetterContent').innerHTML = letterContent;
+        // Template for performance review letter content
+        const performanceReviewLetterContent = `
+            Dear <b>${salutation} ${capitalizeWords(employeeName)}</b>,<br><br>
+            
+            We are writing to provide feedback on your performance during the period of <b>${reviewPeriod}</b>. Below is a summary of your performance during this period:<br><br>
+            
+            <b>Review Summary:</b> <br>${reviewSummary}<br><br>
+            
+            <b>Key Strengths:</b> <br>${strengths}<br><br>
+            
+            <b>Areas for Improvement:</b> <br>${areasForImprovement}<br><br>
+            
+            We truly appreciate your hard work and contributions to <b>${capitalizeWords(companyName)}</b>. We encourage you to continue building on your strengths while addressing the areas for improvement noted in this review.<br><br>
+            
+            If you have any questions or would like to discuss your review in detail, please feel free to reach out to me.<br><br>
+            
+            Sincerely,<br>
+            <b>${capitalizeWords(managerName)}</b><br>
+            Manager<br>
+            <b>${capitalizeWords(companyName)}</b><br><br><br><br><br><br><br><b><br>
+    
+            <footer id="pdf-footer" style="text-align: center;">
+                <img src="footer2.png" alt="Footer Image" style="width: 60%; height: auto; margin-left:15px;">
+            </footer>
+        `;
+    
+        // Update the letter content in the HTML
+        document.getElementById('performanceReviewLetterContent').innerHTML = performanceReviewLetterContent;
     }
+    
+    function downloadPDF() {
+        const letterContent = document.querySelector('.letter-section');
+        
+        // Configure html2canvas to capture the letter with high quality
+        html2canvas(letterContent, { scale: 2 }).then((canvas) => {
+            const imgData = canvas.toDataURL('image/png');
+    
+            // Create a PDF with dimensions that can fit the content proportionally
+            const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = pdf.internal.pageSize.getHeight();
+    
+            // Calculate dimensions to fit the content proportionally
+            const imgWidth = pdfWidth - 20; // Leave margin on both sides
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    
+            // Add the image (letter content) to the PDF, centered and fitting within page bounds
+            let yPosition = 10;
+            pdf.addImage(imgData, 'PNG', 10, yPosition, imgWidth, imgHeight);
+    
+            // Save the PDF
+            pdf.save('performance_review_letter.pdf');
+        });
+    }
+    
 </script>
 
 
