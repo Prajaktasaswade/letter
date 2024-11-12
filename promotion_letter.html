@@ -107,8 +107,8 @@
                 "Please enter the full legal name of the candidate as it should appear on official documents,
                 ensuring correct spelling and capitalization."
             </p>
-            <form id="promotionForm" method="POST" action="{% url 'promotion_letter' %}">
-                {% csrf_token %}
+            <form id="promotionForm" method="POST" action="promotion_letter.html">
+                
                 <label for="salutation">Salutation</label>
                 <select name="salutation" id="salutation">
                     <option value="Mr">Mr.</option>
