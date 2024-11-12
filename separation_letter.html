@@ -1,4 +1,4 @@
-{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -111,8 +111,8 @@
                 "Please enter the full legal name of the candidate as it should appear on official documents,
                 ensuring correct spelling and capitalization."
             </p>
-            <form id="separationForm"method="POST" action="{% url 'separation_letter' %}">
-                {% csrf_token %}
+            <form id="separationForm"method="POST" action="separation_letter">
+               
                 <label for="salutation">Salutation</label><br>
                 <select name="salutation" id="salutation">
                     <option value="Mr">Mr.</option>
@@ -143,13 +143,14 @@
                 </select>
 
                 <button type="submit">Submit sepration  Letter</button>
-                <button type="button" onclick="generateSeparationAgreementLetter()">Generate Separation Agreement Letter</button>
+                <button type="button" onclick="generateSeparationAgreementLetter()">Generate Separation Letter</button>
+                <button type="button" onclick="downloadPDF()">Download  Letter</button>
             </form>
         </div>
 
         <!-- Letter Section -->
         <div class="letter-section border">
-            <img src="{% static 'Images/Demandify1.png' %}" alt="Company Logo" width="150px" style="margin-left: 70%;"> <br/>
+            <img src="Demandify1.png" alt="Company Logo" width="150px" style="margin-left: 70%;"> <br/>
             <h5>Separation Agreement Letter</h5>
             <p id="separationLetterContent">
                 Dear <b>[Salutation].[Employee Name]</b>,<br><br>
@@ -174,45 +175,86 @@
     </div>
 </div>
 
-<script>
-    function capitalizeText(text) {
-        return text.replace(/\b\w/g, function(char) {
-            return char.toUpperCase();
-        });
-    }
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        // Helper function to capitalize the first letter of each word
+        function capitalizeText(text) {
+            return text.replace(/\b\w/g, function(char) {
+                return char.toUpperCase();
+            });
+        }
+    
+        function generateSeparationAgreementLetter() {
+            // Get form input values
+            const salutation = document.getElementById('salutation').value;
+            const employeeName = document.getElementById('employeeName').value || '[Employee Name]';
+            const terminationDate = document.getElementById('terminationDate').value || '[Termination/Exit Date]';
+            const finalSettlement = document.getElementById('finalSettlement').value || '[Final Settlement Amount]';
+            const confidentialityTerms = document.getElementById('confidentialityTerms').value || '[Confidentiality Terms]';
+            const managerName = document.getElementById('managerName').value || '[Manager Name]';
+            const companyName = document.getElementById('companyName').value || '[Company Name]';
+    
+            // Capitalize inputs
+            const capitalizedEmployeeName = capitalizeText(employeeName);
+            const capitalizedCompanyName = capitalizeText(companyName);
+            const capitalizedManagerName = capitalizeText(managerName);
+            const capitalizedConfidentialityTerms = capitalizeText(confidentialityTerms);
+    
+            // Template for separation agreement letter content
+            let separationLetterContent = `
+                Dear <b>${salutation} .${capitalizedEmployeeName}</b>,<br><br>
+    
+                This letter confirms the terms and conditions of your separation from <b>${capitalizedCompanyName}</b>, effective <b>${terminationDate}</b>.<br><br>
+    
+                As part of the final settlement, you will receive a total of <b>${finalSettlement}</b>, which includes all outstanding salary, unused vacation pay, and any other entitled benefits.<br><br>
+    
+                We would also like to remind you of the confidentiality agreement that you signed upon your employment, and reaffirm that you are expected to uphold the following terms: <b>${capitalizedConfidentialityTerms}</b>.<br><br>
+    
+                Please ensure that all company property, including your ID card, laptop, and any other company assets, are returned on or before your last working day.<br><br>
+    
+                We thank you for your contributions to the company and wish you the best in your future endeavors. Should you need any clarification or have further questions regarding the separation process, feel free to contact me.<br><br>
+    
+                Sincerely,<br>
+                <b>${capitalizedManagerName}</b><br>
+                Manager<br>
+                <b>${capitalizedCompanyName}</b><br><br><br><br><br><br><br><br><br><br>
+            <footer id="pdf-footer" style="text-align: center;">
+                <img src="footer2.png" alt="Footer Image" style="width: 60%; height: auto; margin-left:15px;">
+            </footer>
+            `;
+    
+            // Update the letter content in the HTML
+            document.getElementById('separationLetterContent').innerHTML = separationLetterContent;
+        }
+        function downloadPDF() {
+            const letterContent = document.querySelector('.letter-section');
+            
+            // Configure html2canvas to capture the letter with high quality
+            html2canvas(letterContent, { scale: 2 }).then((canvas) => {
+                const imgData = canvas.toDataURL('image/png');
+        
+                // Create a PDF with dimensions that can fit the content proportionally
+                const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+        
+                // Calculate dimensions to fit the content proportionally
+                const imgWidth = pdfWidth - 20; // Leave margin on both sides
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        
+                // Add the image (letter content) to the PDF, centered and fitting within page bounds
+                let yPosition = 10;
+                pdf.addImage(imgData, 'PNG', 10, yPosition, imgWidth, imgHeight);
+        
+                // Save the PDF
+                pdf.save('Sepration_letter.pdf');
+            });
+        }
+    </script>
+    
+    
 
-    function generateSeparationAgreementLetter() {
-        // Get form input values
-        const salutation = document.getElementById('salutation').value;
-        const employeeName = document.getElementById('employeeName').value || '[Employee Name]';
-        const terminationDate = document.getElementById('terminationDate').value || '[Termination/Exit Date]';
-        const finalSettlement = document.getElementById('finalSettlement').value || '[Final Settlement Amount]';
-        const confidentialityTerms = document.getElementById('confidentialityTerms').value || '[Confidentiality Terms]';
-        const managerName = document.getElementById('managerName').value || '[Manager Name]';
-        const companyName = document.getElementById('companyName').value || '[Company Name]';
-    
-        // Capitalize inputs
-        const capitalizedEmployeeName = capitalizeText(employeeName);
-        const capitalizedCompanyName = capitalizeText(companyName);
-        const capitalizedManagerName = capitalizeText(managerName);
-        const capitalizedConfidentialityTerms = capitalizeText(confidentialityTerms);
-    
-        // Replace placeholders in the letter content with capitalized values
-        let separationLetterContent = document.getElementById('separationLetterContent').innerHTML;
-        separationLetterContent = separationLetterContent.replace(/\[Salutation\]/g, salutation);
-        separationLetterContent = separationLetterContent.replace(/\[Employee Name\]/g, capitalizedEmployeeName);
-        separationLetterContent = separationLetterContent.replace(/\[Termination\/Exit Date\]/g, terminationDate);
-        separationLetterContent = separationLetterContent.replace(/\[Final Settlement Amount\]/g, finalSettlement);
-        separationLetterContent = separationLetterContent.replace(/\[Confidentiality Terms\]/g, capitalizedConfidentialityTerms);
-        separationLetterContent = separationLetterContent.replace(/\[Manager Name\]/g, capitalizedManagerName);
-        separationLetterContent = separationLetterContent.replace(/\[Company Name\]/g, capitalizedCompanyName);
-    
-        // Update the letter content with filled details
-        document.getElementById('separationLetterContent').innerHTML = separationLetterContent;
-    }
-    
-    
-</script>
 
 
 </body>
