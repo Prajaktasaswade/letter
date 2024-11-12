@@ -1,4 +1,4 @@
-{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -61,7 +61,7 @@
             background-repeat: no-repeat;
             background-size: 300px;
             background-position: 45% 280px;
-            background-image: url("{% static 'Images/demandify.png' %}");
+            background-image: url('demandify.png');
             border-radius: 10px;
             padding: 10px;
             color: #333;
@@ -110,8 +110,8 @@
                 "Please enter the full legal name of the candidate as it should appear on official documents,
                 ensuring correct spelling and capitalization."
             </p>
-            <form id="warningForm" method="POST" action="{% url 'warning_letter' %}">
-                {% csrf_token %}
+            <form id="warningForm" method="POST" action="warning_letter.html">
+                
                 <label for="salutation">Salutation</label>
                 <select name="salutation" id="salutation">
                     <option value="Mr">Mr.</option>
@@ -142,12 +142,14 @@
 
                 <button type="submit">submit warning Letter</button>
                 <button type="button" onclick="generateWarningLetter()">Generate Warning Letter</button>
+                <button type="button" onclick="downloadPDF()">Download  Letter</button>
+
             </form>
         </div>
 
         <!-- Letter Section -->
         <div class="letter-section border">
-            <img src="{% static 'Images/Demandify1.png' %}" alt="Company Logo" width="150px" style="margin-left: 70%;"> 
+            <img src="Demandify1.png" alt="Company Logo" width="150px" style="margin-left: 70%;"> 
             <h5>Warning Letter</h5>
             <p id="warningLetterContent">
                 Dear <b>[Salutation].[Employee Name]</b>,<br><br>
@@ -170,42 +172,85 @@
     </div>
 </div>
 
-<script>
-    function capitalizeText(text) {
-        return text.charAt(0).toUpperCase() + text.slice(1);
-    }
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        // Helper function to capitalize the first letter of each word
+        function capitalizeText(text) {
+            return text.replace(/\b\w/g, function(char) {
+                return char.toUpperCase();
+            });
+        }
+    
+        function generateWarningLetter() {
+            // Get form input values
+            const salutation = document.getElementById('salutation').value;
+            const employeeName = document.getElementById('employeeName').value || '[Employee Name]';
+            const issueDescription = document.getElementById('issueDescription').value || '[Issue Description]';
+            const warningDate = document.getElementById('warningDate').value || '[Date of Warning]';
+            const consequences = document.getElementById('consequences').value || '[Consequences]';
+            const managerName = document.getElementById('managerName').value || '[Manager Name]';
+            const companyName = document.getElementById('companyName').value || '[Company Name]';
+    
+            // Capitalize inputs
+            const capitalizedEmployeeName = capitalizeText(employeeName);
+            const capitalizedIssueDescription = capitalizeText(issueDescription);
+            const capitalizedConsequences = capitalizeText(consequences);
+            const capitalizedManagerName = capitalizeText(managerName);
+            const capitalizedCompanyName = capitalizeText(companyName);
+    
+            // Template for warning letter content
+            let warningLetterContent = `
+                Dear <b>${salutation}. ${capitalizedEmployeeName}</b>,<br><br>
+    
+                This letter serves as a formal warning regarding your actions related to <b>${capitalizedIssueDescription}</b>. 
+                This behavior violates company policies, and it has been noted in your employee record as of <b>${warningDate}</b>.<br><br>
+    
+                We expect all employees to adhere to our company’s code of conduct and performance standards. Failure to correct this behavior will result in further disciplinary actions, including but not limited to <b>${capitalizedConsequences}</b>.<br><br>
+    
+                If you have any questions regarding this matter or need clarification on company policies, feel free to reach out to me or the HR department.<br><br>
+    
+                We hope to see an improvement in your performance and behavior going forward.<br><br>
+    
+                Sincerely,<br>
+                <b>${capitalizedManagerName}</b><br>
+                Manager<br>
+                <b>${capitalizedCompanyName}</b><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+                <footer id="pdf-footer" style="text-align: center;">
+                   <img src="footer2.png" alt="Footer Image" style="width: 60%; height: auto; margin-left:15px;">
+                </footer>
+            `;
+    
+            // Update the letter content in the HTML
+            document.getElementById('warningLetterContent').innerHTML = warningLetterContent;
+        }
+        function downloadPDF() {
+            const letterContent = document.querySelector('.letter-section');
+            
+            // Configure html2canvas to capture the letter with high quality
+            html2canvas(letterContent, { scale: 2 }).then((canvas) => {
+                const imgData = canvas.toDataURL('image/png');
+        
+                // Create a PDF with dimensions that can fit the content proportionally
+                const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+        
+                // Calculate dimensions to fit the content proportionally
+                const imgWidth = pdfWidth - 20; // Leave margin on both sides
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        
+                // Add the image (letter content) to the PDF, centered and fitting within page bounds
+                let yPosition = 10;
+                pdf.addImage(imgData, 'PNG', 10, yPosition, imgWidth, imgHeight);
+        
+                // Save the PDF
+                pdf.save('Transfer_letter.pdf');
+            });
+        }
+    </script>
+    
 
-    function generateWarningLetter() {
-        // Get form input values
-        const salutation = document.getElementById('salutation').value;
-        const employeeName = document.getElementById('employeeName').value || '[Employee Name]';
-        const issueDescription = document.getElementById('issueDescription').value || '[Issue Description]';
-        const warningDate = document.getElementById('warningDate').value || '[Date of Warning]';
-        const consequences = document.getElementById('consequences').value || '[Consequences]';
-        const managerName = document.getElementById('managerName').value || '[Manager Name]';
-        const companyName = document.getElementById('companyName').value || '[Company Name]';
-
-        // Capitalize inputs
-        const capitalizedEmployeeName = capitalizeText(employeeName);
-        const capitalizedIssueDescription = capitalizeText(issueDescription);
-        const capitalizedManagerName = capitalizeText(managerName);
-        const capitalizedConsequences = capitalizeText(consequences);
-        const capitalizedCompanyName = capitalizeText(companyName);
-
-        // Replace placeholders in the letter content
-        let warningLetterContent = document.getElementById('warningLetterContent').innerHTML;
-        warningLetterContent = warningLetterContent.replace(/\[Salutation\]/g, salutation);
-        warningLetterContent = warningLetterContent.replace(/\[Employee Name\]/g, capitalizedEmployeeName);
-        warningLetterContent = warningLetterContent.replace(/\[Issue Description\]/g, capitalizedIssueDescription);
-        warningLetterContent = warningLetterContent.replace(/\[Date of Warning\]/g, warningDate);
-        warningLetterContent = warningLetterContent.replace(/\[Consequences\]/g, capitalizedConsequences);
-        warningLetterContent = warningLetterContent.replace(/\[Manager Name\]/g, capitalizedManagerName);
-        warningLetterContent = warningLetterContent.replace(/\[Company Name\]/g, capitalizedCompanyName);
-
-        // Update the letter content with filled details
-        document.getElementById('warningLetterContent').innerHTML = warningLetterContent;
-    }
-</script>
 
 
 </body>
