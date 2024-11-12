@@ -1,4 +1,4 @@
-{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -62,7 +62,7 @@
             background-repeat: no-repeat;
             background-size: 300px;
             background-position:45% 280px;
-            background-image: url("{% static 'Images/demandify.png' %}");
+            background-image: url('Images/demandify.png');
             border-radius: 10px;
             padding: 20px;
             color: #333;
@@ -112,8 +112,8 @@
                 "Please enter the full legal name of the candidate as it should appear on official documents,
                 ensuring correct spelling and capitalization."
             </p>
-            <form id="referenceForm"method="POST" action="{% url 'reference_letter' %}">
-                {% csrf_token %}
+            <form id="referenceForm"method="POST" action="reference_letter.html">
+                
                 <label for="salutation">Salutation</label><br>
                 <select name="salutation" id="salutation">
                     <option value="Mr">Mr.</option>
@@ -143,17 +143,18 @@
                 <label for="managerEmail">Manager Email</label>
                 <input type="email" name="managerEmail" id="managerEmail" placeholder="Enter Manager Email">
 
-                <label for="managercontact">Manager Phone Number</label>
+                <label for="managerContact">Manager Phone Number</label>
                 <input type="Number" name="managercontact" id="managercontact" placeholder="Manager Phone Number">
                 
                 <button type="submit">Submit reference  Letter</button>
                 <button type="button" onclick="generateReferenceLetter()">Generate Reference Letter</button>
+                <button type="button" onclick="downloadPDF()">Download  Letter</button>
             </form>
         </div>
 
         <!-- Letter Section -->
         <div class="letter-section border">
-            <img src="{% static 'Images/Demandify1.png' %}" alt="Company Logo" width="150px" style="margin-left: 70%;"> <br/>
+            <img src="Demandify1.png" alt="Company Logo" width="150px" style="margin-left: 70%;"> <br/>
             <h5>Reference Letter</h5>
             <p id="referenceLetterContent">
                 To Whom It May Concern,<br><br>
@@ -174,44 +175,87 @@
     </div>
 </div>
 
-<script>
-    function capitalizeText(text) {
-        return text.replace(/\b\w/g, function(char) {
-            return char.toUpperCase();
-        });
-    }
-    function generateReferenceLetter() {
-        // Get form input values
-        const salutation = document.getElementById('salutation').value;
-        const employeeName = document.getElementById('employeeName').value || '[Employee Name]';
-        const position = document.getElementById('position').value || '[Position Held]';
-        const companyName = document.getElementById('companyName').value || '[Company Name]';
-        const employmentPeriod = document.getElementById('employmentPeriod').value || '[Employment Period]';
-        const managerName = document.getElementById('managerName').value || '[Manager Name]';
-        const managerEmail = document.getElementById('managerEmail').value || '[Manager Email]';
-        const managercontact = document.getElementById('managercontact').value || '[Manager Phone Number]';
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+        }
+    
+        function capitalizeWords(sentence) {
+            return sentence.split(' ').map(capitalizeFirstLetter).join(' ');
+        }
+    
+        
+    
+            // Template for reference letter content
+            function generateReferenceLetter() {
+                // Get form input values
+                const salutation = document.getElementById('salutation').value;
+                const employeeName = document.getElementById('employeeName').value || '[Employee Name]';
+                const position = document.getElementById('position').value || '[Position Held]';
+                const companyName = document.getElementById('companyName').value || '[Company Name]';
+                const employmentPeriod = document.getElementById('employmentPeriod').value || '[Employment Period]';
+                const managerName = document.getElementById('managerName').value || '[Manager Name]';
+                const managerEmail = document.getElementById('managerEmail').value || '[Manager Email]';
+                const managerContact = document.getElementById('managercontact').value || '[Manager Phone Number]';
+            
+                // Template for reference letter content
+                const referenceLetterContent = `
+                    To Whom It May Concern,<br><br>
+            
+                    I am writing to provide a reference for <b>${salutation} ${capitalizeWords(employeeName)}</b>, who has worked with us at <b>${capitalizeWords(companyName)}</b> as a <b>${capitalizeWords(position)}</b> for <b>${employmentPeriod}</b>. During this time, <b>${capitalizeWords(employeeName)}</b> has consistently demonstrated professionalism, dedication, and excellent skills in their role.<br><br>
+            
+                    ${capitalizeWords(employeeName)} has been an integral part of our team, contributing significantly to our projects, particularly in [specific contribution or project details]. Their ability to collaborate, solve problems, and take initiative has been commendable, and they have proven to be a valuable asset to our organization.<br><br>
+            
+                    I have no doubt that <b>${capitalizeWords(employeeName)}</b> will continue to excel in their future endeavors. If you require further information, please feel free to contact me at ${managerEmail} or ${managerContact}.<br><br>
+            
+                    Sincerely,<br>
+                    <b>${capitalizeWords(managerName)}</b><br>
+                    Manager<br>
+                    <b>${capitalizeWords(companyName)}</b><br><br><br><br><br><br><br><b><br><br><br><br><br><br><br>
+    
+                    <footer id="pdf-footer" style="text-align: center;">
+                        <img src="footer2.png" alt="Footer Image" style="width: 60%; height: auto; margin-left:15px;">
+                    </footer>
+                `;
+            
+                // Update the letter content in the HTML
+                document.getElementById('referenceLetterContent').innerHTML = referenceLetterContent;
+            }
+            
+            function downloadPDF() {
+                const letterContent = document.querySelector('.letter-section');
+                
+                // Configure html2canvas to capture the letter with high quality
+                html2canvas(letterContent, { scale: 2 }).then((canvas) => {
+                    const imgData = canvas.toDataURL('image/png');
+            
+                    // Create a PDF with dimensions that can fit the content proportionally
+                    const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = pdf.internal.pageSize.getHeight();
+            
+                    // Calculate dimensions to fit the content proportionally
+                    const imgWidth = pdfWidth - 20; // Leave margin on both sides
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            
+                    // Add the image (letter content) to the PDF, centered and fitting within page bounds
+                    let yPosition = 10;
+                    pdf.addImage(imgData, 'PNG', 10, yPosition, imgWidth, imgHeight);
+            
+                    
+            
+                    // Save the PDF
+                    pdf.save('reference_letter.pdf');
+                });
+            }
+            
+            
+            
+    </script>
+    
 
-        // Capitalize inputs
-        const capitalizedEmployeeName = capitalizeText(employeeName);
-        const capitalizedPosition = capitalizeText(position);
-        const capitalizedCompanyName = capitalizeText(companyName);
-        const capitalizedManagerName = capitalizeText(managerName);
-
-        // Replace placeholders in the letter content
-        let referenceLetterContent = document.getElementById('referenceLetterContent').innerHTML;
-        referenceLetterContent = referenceLetterContent.replace(/\[Salutation\]/g, salutation);
-        referenceLetterContent = referenceLetterContent.replace(/\[Employee Name\]/g, capitalizedEmployeeName);
-        referenceLetterContent = referenceLetterContent.replace(/\[Position Held\]/g, capitalizedPosition);
-        referenceLetterContent = referenceLetterContent.replace(/\[Company Name\]/g, capitalizedCompanyName);
-        referenceLetterContent = referenceLetterContent.replace(/\[Employment Period\]/g, employmentPeriod);
-        referenceLetterContent = referenceLetterContent.replace(/\[Manager Name\]/g, capitalizedManagerName);
-        referenceLetterContent = referenceLetterContent.replace(/\[Manager Email\]/g, managerEmail);
-        referenceLetterContent = referenceLetterContent.replace(/\[Manager Phone Number\]/g, managercontact);
-
-        // Update the letter content with filled details
-        document.getElementById('referenceLetterContent').innerHTML = referenceLetterContent;
-    }
-</script>
 
 
 </body>
