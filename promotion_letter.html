@@ -1,4 +1,4 @@
-{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -62,7 +62,7 @@
             background-repeat: no-repeat;
             background-size: 300px;
             background-position: 45% 280px;
-            background-image: url("{% static 'Images/demandify.png' %}");
+            background-image: url('demandify.png');
             border-radius: 10px;
             padding: 10px;
             color: #333;
@@ -128,6 +128,9 @@
                 <label for="effectiveDate">Effective Date</label>
                 <input type="date" name="effectiveDate" id="effectiveDate">
 
+                <label for="responsibilities">Responsibilities</label>
+                <input type="text" name="responsibilities" id="responsibilities">
+
                 <label for="salaryIncrement">Salary Increment</label>
                 <input type="text" name="salaryIncrement" id="salaryIncrement" placeholder="Enter Salary Increment">
 
@@ -144,13 +147,14 @@
 
                 <button type="button" onclick="generatePromotionLetter()">Generate Promotion Letter</button>
                 <button type="submit">Submit Promotion Letter</button>
+                <button type="button" onclick="downloadPDF()">Download  Letter</button>
             </form>
         </div>
 
         <!-- Letter Section -->
         <div class="letter-section border">
             <span>
-                <img src="{% static 'Images/Demandify1.png' %}" alt="Company Logo" width="150px" style="margin-left: 70%;">
+                <img src="Demandify1.png" alt="Company Logo" width="150px" style="margin-left: 70%;">
                 <h5>Promotion Letter</h5>
             </span>
             <p id="promotionLetterContent">
@@ -179,46 +183,85 @@
     </div>
 </div>
 
-<script>
-    function capitalizeText(text) {
-        return text.replace(/\b\w/g, function(char) {
-            return char.toUpperCase();
-        });
-    }
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        function capitalizeWords(sentence) {
+            return sentence.replace(/\b\w/g, function(char) {
+                return char.toUpperCase();
+            });
+        }
     
-    function generatePromotionLetter() {
-        // Get form input values
-        const salutation = document.getElementById('salutation').value;
-        const employeeName = document.getElementById('employeeName').value;
-        const currentPosition = document.getElementById('currentPosition').value;
-        const newPosition = document.getElementById('newPosition').value;
-        const effectiveDate = document.getElementById('effectiveDate').value;
-        const salaryIncrement = document.getElementById('salaryIncrement').value;
-        const managerName = document.getElementById('managerName').value;
-        const companyName = document.getElementById('companyName').value;
+        function generatePromotionLetter() {
+            // Get form input values
+            const salutation = document.getElementById('salutation').value;
+            const employeeName = document.getElementById('employeeName').value;
+            const newPosition = document.getElementById('newPosition').value;
+            const companyName = document.getElementById('companyName').value;
+            const effectiveDate = document.getElementById('effectiveDate').value;
+            const managerName = document.getElementById('managerName').value;
+            const responsibilities = document.getElementById('responsibilities').value;
+            const salaryIncrement = document.getElementById('salaryIncrement').value;
     
-        // Capitalize inputs
-        const capitalizedEmployeeName = capitalizeText(employeeName);
-        const capitalizedCompanyName = capitalizeText(companyName);
-        const capitalizedManagerName = capitalizeText(managerName);
-        const capitalizedNewPosition = capitalizeText(newPosition);
-        const capitalizedCurrentPosition = capitalizeText(currentPosition);
+            // Create the promotion letter content
+            const promotionLetterContent = `
+                <p>
+                    Dear <b>${salutation} ${capitalizeWords(employeeName)}</b>,<br><br>
     
-        // Replace placeholders in the letter content
-        let promotionLetterContent = document.getElementById('promotionLetterContent').innerHTML;
-        promotionLetterContent = promotionLetterContent.replace(/\[Salutation\]/g, salutation);
-        promotionLetterContent = promotionLetterContent.replace(/\[Employee Name\]/g, capitalizedEmployeeName);
-        promotionLetterContent = promotionLetterContent.replace(/\[New Position\]/g, capitalizedNewPosition);
-        promotionLetterContent = promotionLetterContent.replace(/\[Effective Date\]/g, effectiveDate);
-        promotionLetterContent = promotionLetterContent.replace(/\[Salary Increment\]/g, salaryIncrement);
-        promotionLetterContent = promotionLetterContent.replace(/\[Company Name\]/g, capitalizedCompanyName);
-        promotionLetterContent = promotionLetterContent.replace(/\[Manager Name\]/g, capitalizedManagerName);
+                    Congratulations! We are pleased to inform you that you have been promoted to the position of <b>${capitalizeWords(newPosition)}</b> 
+                    at <b>${capitalizeWords(companyName)}</b>, effective <b>${effectiveDate}</b>. This promotion is a reflection of your hard work, 
+                    dedication, and the positive contributions you have made to the company.<br><br>
     
-        // Update the letter content with filled details
-        document.getElementById('promotionLetterContent').innerHTML = promotionLetterContent;
-    }
+                    In your new role, you will report to <b>${capitalizeWords(managerName)}</b> and will be responsible for ${responsibilities}. 
+                    Your new compensation package includes a salary increase of <b>${salaryIncrement}</b>, along with the benefits and perks 
+                    you are currently entitled to.<br><br>
     
-</script>
+                    We are confident that you will excel in your new role and continue to be a valuable asset to our team. 
+                    We look forward to your continued success at <b>${capitalizeWords(companyName)}</b>.<br><br>
+    
+                    Please feel free to reach out to me or your manager if you have any questions regarding your new role.<br><br>
+    
+                    Sincerely,<br>
+                    <b>${capitalizeWords(managerName)}</b><br>
+                    Manager<br>
+                    <b>${capitalizeWords(companyName)}</b>
+                </p><br><br><br><br><br><br>
+        <footer id="pdf-footer" style="text-align: center;">
+                <img src="footer2.png" alt="Footer Image" style="width: 60%; height: auto; margin-left:15px;">
+        </footer>
+            `;
+    
+            // Update the content in the specified HTML element
+            document.getElementById('promotionLetterContent').innerHTML = promotionLetterContent;
+        }
+        function downloadPDF() {
+            const letterContent = document.querySelector('.letter-section');
+            
+            // Configure html2canvas to capture the letter with high quality
+            html2canvas(letterContent, { scale: 2 }).then((canvas) => {
+                const imgData = canvas.toDataURL('image/png');
+        
+                // Create a PDF with dimensions that can fit the content proportionally
+                const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+        
+                // Calculate dimensions to fit the content proportionally
+                const imgWidth = pdfWidth - 20; // Leave margin on both sides
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        
+                // Add the image to the PDF, centered, and fitting within page bounds
+                let yPosition = 10;
+                pdf.addImage(imgData, 'PNG', 10, yPosition, imgWidth, imgHeight);
+        
+                // Save the PDF
+                pdf.save('promotion_letter.pdf');
+            });
+        }
+        
+
+    </script>
+    
 
 </body>
 </html>
