@@ -5,7 +5,7 @@ from .views import off_letter_view
 urlpatterns = [
     path('joining-letter/', joining_letter_view, name='join_letter'),
     path('experience-letter/', experience_letter_view, name='experience_letter'),
-    path('interview-call/', interviewcall_letter_view, name='interviewcall_letter'),
+    path('interviewcall_letter/', interviewcall_letter_view, name='interviewcall_letter'),
     path('promotion-letter/', promotion_letter_view, name='promotion_letter'),
     path('salary-increase-letter/', salary_increase_letter_view, name='salaryincrease_letter'), 
     path('transfer-letter/', transfer_letter_view, name='transfer_letter'),
