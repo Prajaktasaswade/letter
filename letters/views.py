@@ -1,7 +1,6 @@
 from .models import OffLetter
 from django.http import JsonResponse
 from django.utils.text import capfirst
-from django.views.decorators.csrf import csrf_exempt
 from .models import JoiningLetter
 from .models import ExperienceLetter,OffLetter
 from .models import InterviewcallLetter,PromotionLetter,SalaryIncreaseLetter,PerformanceReviewLetter,ReferenceLetter
@@ -73,7 +72,7 @@ def experience_letter_view(request):
 
     return render(request, 'experience_letter.html')
 
-@csrf_exempt
+
 def interviewcall_letter_view(request):
     if request.method == 'POST':
         interviewcall_letter = InterviewcallLetter(
