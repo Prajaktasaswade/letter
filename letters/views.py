@@ -85,8 +85,7 @@ def interviewcall_letter_view(request):
             contactPerson=capitalize_words(request.POST['contactPerson'])
         )
         interviewcall_letter.save()
-        return JsonResponse({'status': 'success'})
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+        
     return render(request, 'interviewcall_letter.html')
     
 
