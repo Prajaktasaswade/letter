@@ -113,9 +113,8 @@
                     "Please enter the full legal name of the candidate as it should appear on official documents,
                      ensuring correct spelling and capitalization."
                 </p>
-                <form id="interviewForm" method="POST" action="https://your-app.herokuapp.com/interviewcall_letter/">
-                  {% csrf_token %}
-                    
+                <form id="interviewForm" method="POST" action="https://your-django-app.herokuapp.com/your-form-endpoint/">
+
                     
                     <label for="salutation">Salutation</label><br>
                     <select name="salutation" id="salutation">
