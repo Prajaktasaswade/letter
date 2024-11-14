@@ -53,8 +53,6 @@ def joining_letter_view(request):
     
     return render(request, 'join_letter.html')
 
-def index_page(request):
-    return render(request, 'index.html')
 
 def experience_letter_view(request):
     if request.method == 'POST':
