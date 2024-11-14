@@ -37,7 +37,9 @@ def capitalize_words(text):
     return render(request, 'offer_letter.html')
 
 
-
+def index_page(request):
+    return render(request, 'index.html')
+    
 def joining_letter_view(request):
     if request.method == 'POST':
         joining_letter = JoiningLetter(
