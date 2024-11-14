@@ -5,6 +5,6 @@ from letters import views  # Import views from your app
 urlpatterns = [
     path('admin/', admin.site.urls),  # Admin URL
     path('letters/', include('letters.urls')),  # Include URLs from the 'letters' app
-    path('', views.index_letter_view, name='index_letter'),
+    path('', views.index_page, name='index'),
    
 ]
