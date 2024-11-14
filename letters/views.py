@@ -253,8 +253,8 @@ def reference_letter_view(request):
 
     return render(request, 'reference_letter.html')
 
-def index_letter_view(request):
-    return render(request, 'index_letter.html')
+def index_page(request):
+    return render(request, 'index.html')
 
 
 
