@@ -91,6 +91,6 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
-django_heroku.settings(locals())
+git add letter/settings.py
+git commit -m "Configured MySQL database connection"
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
