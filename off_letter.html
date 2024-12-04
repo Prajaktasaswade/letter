@@ -490,58 +490,56 @@ function downloadPDF() {
     downloadButton.style.display = "none"; // Hide the download button
     generateButton.style.display = "none"; // Hide the generate button
 
-    // Ensure the container is visible
-    letterContent.style.display = "block";
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
 
-    // Use html2canvas to take a snapshot of the letter content
-    html2canvas(letterContent, { scale: 2, useCORS: true })
-        .then((canvas) => {
-            // Compress the canvas to a smaller JPEG
-            const imgData = canvas.toDataURL('image/jpeg', 0.5); // JPEG with 50% quality
+    // Add text directly for sharpness
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(12);
 
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            const imgWidth = 210; // Width of A4 in mm
-            const pageHeight = 297; // Height of A4 in mm
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-            let heightLeft = imgHeight;
+    // Add high-quality images and text
+    html2canvas(letterContent, { scale: 2, useCORS: true }).then((canvas) => {
+        const imgData = canvas.toDataURL('image/jpeg', 1); // Full-quality JPEG
+        const imgWidth = 210; // Width of A4 in mm
+        const pageHeight = 297; // Height of A4 in mm
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        let heightLeft = imgHeight;
 
-            // Start adding images to the PDF
-            let position = 0;
+        let position = 0;
 
-            // Add the first page
+        // Add first page image
+        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+
+        // Add remaining pages if content overflows
+        while (heightLeft > 0) {
+            position = heightLeft - imgHeight;
+            pdf.addPage();
             pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
             heightLeft -= pageHeight;
+        }
 
-            // Add additional pages if needed
-            while (heightLeft > 0) {
-                position = heightLeft - imgHeight; // Adjust position for next page
-                pdf.addPage();
-                pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
-                heightLeft -= pageHeight;
-            }
+        // Embed background image (optional, high-quality)
+        const backgroundImg = new Image();
+        backgroundImg.src = "background-image-path.jpg"; // Replace with your image path
+        backgroundImg.onload = function () {
+            pdf.addPage();
+            pdf.addImage(backgroundImg, 'JPEG', 0, 0, imgWidth, pageHeight); // Add a full-page background image
+        };
 
-            const backgroundImg = new Image();
-            backgroundImg.src = "background-image-path.jpg"; // Replace with your image path
-            backgroundImg.onload = function () {
-                pdf.addPage();
-                pdf.addImage(backgroundImg, 'JPEG', 0, 0, imgWidth, pageHeight); // Add background image
-            };
+        // Save the PDF with the employee's name
+        pdf.save(`Offer_Letter_${document.getElementById("name").value}.pdf`);
 
-            // Save the PDF with the employee's name
-            pdf.save(`Offer_Letter_${document.getElementById("name").value}.pdf`);
+        // Restore the visibility of the buttons
+        downloadButton.style.display = "block"; // Show the download button again
+        generateButton.style.display = "block"; // Show the generate button again
+    }).catch((error) => {
+        console.error("Error generating PDF:", error);
 
-            // Restore the visibility of the buttons
-            downloadButton.style.display = "block"; // Show the download button again
-            generateButton.style.display = "block"; // Show the generate button again
-        })
-        .catch((error) => {
-            console.error("Error generating PDF:", error);
-
-            // Restore visibility of buttons in case of an error
-            downloadButton.style.display = "block";
-            generateButton.style.display = "block";
-        });
+        // Restore visibility of buttons in case of an error
+        downloadButton.style.display = "block";
+        generateButton.style.display = "block";
+    });
 }
 
 </script>
