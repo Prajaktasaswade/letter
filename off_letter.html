@@ -561,19 +561,44 @@ function downloadword() {
     const htmlContent = letterContent.innerHTML;
 
     // Convert the HTML content into a Word document format
-    const { Document, Packer, Paragraph, TextRun } = docx;
+    const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell } = docx;
 
+    // Create an array to hold the Word document content
+    const content = [];
+
+    // If the HTML content contains table elements, you can create tables in the Word document as well
+    // Parse the HTML content and convert it into docx paragraphs
+    const div = document.createElement('div');
+    div.innerHTML = htmlContent;
+
+    // Convert paragraphs into Word document paragraphs
+    Array.from(div.childNodes).forEach(node => {
+        if (node.nodeName === "P") {
+            const paragraph = new Paragraph({
+                children: [
+                    new TextRun(node.textContent) // Add the text content of the paragraph
+                ]
+            });
+            content.push(paragraph);
+        } else if (node.nodeName === "TABLE") {
+            const rows = Array.from(node.rows).map(row => {
+                const cells = Array.from(row.cells).map(cell => {
+                    return new TableCell({
+                        children: [new Paragraph(cell.textContent)]
+                    });
+                });
+                return new TableRow(cells);
+            });
+            content.push(new Table({ rows }));
+        }
+    });
+
+    // Create the Word document
     const doc = new Document({
         sections: [
             {
                 properties: {},
-                children: [
-                    new Paragraph({
-                        children: [
-                            new TextRun(htmlContent) // Wrap the HTML content in a TextRun
-                        ]
-                    })
-                ]
+                children: content
             }
         ]
     });
@@ -583,14 +608,14 @@ function downloadword() {
         saveAs(content, `Offer_Letter_${document.getElementById("name").value}.docx`);
 
         // Restore the visibility of the buttons
-        // Show the download button again
+        downloadButton.style.display = "block"; // Show the download button again
         generateButton.style.display = "block"; // Show the generate button again
     }).catch(function (error) {
         console.error("Error generating Word document:", error);
 
         // Restore visibility of buttons in case of an error
-        
-        generateButton.style.display = "block";
+        downloadButton.style.display = "block"; // Show the download button again
+        generateButton.style.display = "block"; // Show the generate button again
     });
 }
 
