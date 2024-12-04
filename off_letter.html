@@ -560,7 +560,7 @@ function downloadword() {
     // Get the HTML content of the letter
     const htmlContent = letterContent.innerHTML;
 
-    // Convert HTML content to Word document using the docx library
+    // Convert the HTML content into a Word document format
     const { Document, Packer, Paragraph, TextRun } = docx;
 
     const doc = new Document({
@@ -570,7 +570,7 @@ function downloadword() {
                 children: [
                     new Paragraph({
                         children: [
-                            new TextRun(htmlContent) // Insert the HTML content here
+                            new TextRun(htmlContent) // Wrap the HTML content in a TextRun
                         ]
                     })
                 ]
@@ -578,14 +578,14 @@ function downloadword() {
         ]
     });
 
-    // Convert the document to a blob and trigger the download
+    // Create the Word document and download it
     Packer.toBlob(doc).then(function (content) {
         saveAs(content, `Offer_Letter_${document.getElementById("name").value}.docx`);
 
         // Restore the visibility of the buttons
         downloadButton.style.display = "block"; // Show the download button again
         generateButton.style.display = "block"; // Show the generate button again
-    }).catch((error) => {
+    }).catch(function (error) {
         console.error("Error generating Word document:", error);
 
         // Restore visibility of buttons in case of an error
