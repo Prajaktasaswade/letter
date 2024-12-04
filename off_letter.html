@@ -583,7 +583,7 @@ function downloadword() {
         saveAs(content, `Offer_Letter_${document.getElementById("name").value}.docx`);
 
         // Restore the visibility of the buttons
-        downloadButton.style.display = "block"; // Show the download button again
+        // Show the download button again
         generateButton.style.display = "block"; // Show the generate button again
     }).catch(function (error) {
         console.error("Error generating Word document:", error);
